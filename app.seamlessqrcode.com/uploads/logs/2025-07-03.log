@@ -1,0 +1,16 @@
+[03-Jul-2025 03:14:43 UTC] PHP Deprecated:  Creation of dynamic property WhichBrowser\Model\Os::$build is deprecated in /home/gponzghq/app.seamlessqrcode.com/vendor/nadar/parser/src/Analyser/Header/Useragent/Os.php on line 609
+[03-Jul-2025 22:03:16 UTC] PHP Fatal error:  Uncaught Error: Undefined constant "Altum\SITE_url" in /home/gponzghq/app.seamlessqrcode.com/app/core/App.php:261
+Stack trace:
+#0 /home/gponzghq/app.seamlessqrcode.com/index.php(22): Altum\App->__construct()
+#1 {main}
+  thrown in /home/gponzghq/app.seamlessqrcode.com/app/core/App.php on line 261
+[03-Jul-2025 22:03:19 UTC] PHP Fatal error:  Uncaught Error: Undefined constant "Altum\SITE_url" in /home/gponzghq/app.seamlessqrcode.com/app/core/App.php:261
+Stack trace:
+#0 /home/gponzghq/app.seamlessqrcode.com/index.php(22): Altum\App->__construct()
+#1 {main}
+  thrown in /home/gponzghq/app.seamlessqrcode.com/app/core/App.php on line 261
+[03-Jul-2025 22:03:52 UTC] PHP Fatal error:  Uncaught Error: Undefined constant "Altum\SITE_url" in /home/gponzghq/app.seamlessqrcode.com/app/core/App.php:261
+Stack trace:
+#0 /home/gponzghq/app.seamlessqrcode.com/index.php(22): Altum\App->__construct()
+#1 {main}
+  thrown in /home/gponzghq/app.seamlessqrcode.com/app/core/App.php on line 261

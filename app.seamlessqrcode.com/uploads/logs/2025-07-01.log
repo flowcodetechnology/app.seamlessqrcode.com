@@ -1,0 +1,15 @@
+[01-Jul-2025 08:02:28 UTC] PHP Fatal error:  Uncaught Error: Undefined constant "Altum\SITE_url" in /home/gponzghq/app.seamlessqrcode.com/app/core/App.php:261
+Stack trace:
+#0 /home/gponzghq/app.seamlessqrcode.com/index.php(22): Altum\App->__construct()
+#1 {main}
+  thrown in /home/gponzghq/app.seamlessqrcode.com/app/core/App.php on line 261
+[01-Jul-2025 08:04:44 UTC] PHP Fatal error:  Uncaught Error: Undefined constant "Altum\SITE_url" in /home/gponzghq/app.seamlessqrcode.com/app/core/App.php:261
+Stack trace:
+#0 /home/gponzghq/app.seamlessqrcode.com/index.php(22): Altum\App->__construct()
+#1 {main}
+  thrown in /home/gponzghq/app.seamlessqrcode.com/app/core/App.php on line 261
+[01-Jul-2025 08:13:48 UTC] PHP Fatal error:  Uncaught Error: Undefined constant "Altum\SITE_url" in /home/gponzghq/app.seamlessqrcode.com/app/core/App.php:261
+Stack trace:
+#0 /home/gponzghq/app.seamlessqrcode.com/index.php(22): Altum\App->__construct()
+#1 {main}
+  thrown in /home/gponzghq/app.seamlessqrcode.com/app/core/App.php on line 261
