@@ -4,28 +4,6 @@ define('ROOT', realpath(__DIR__ . '/..') . '/');
 require_once ROOT . 'vendor/autoload.php';
 require_once ROOT . 'app/includes/product.php';
 
-function get_ip() {
-    if(array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER)) {
-
-        if(strpos($_SERVER['HTTP_X_FORWARDED_FOR'], ',')) {
-            $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
-
-            return trim(reset($ips));
-        } else {
-            return $_SERVER['HTTP_X_FORWARDED_FOR'];
-        }
-
-    } else if(array_key_exists('REMOTE_ADDR', $_SERVER)) {
-        return $_SERVER['REMOTE_ADDR'];
-    } else if(array_key_exists('HTTP_CLIENT_IP', $_SERVER)) {
-        return $_SERVER['HTTP_CLIENT_IP'];
-    }
-
-    return '';
-}
-
-$altumcode_api = 'https://api.altumcode.com/validate';
-
 /* Make sure the product wasn't already installed */
 if(file_exists(ROOT . 'install/installed')) {
     die();
@@ -73,36 +51,8 @@ if($database->connect_error) {
 
 $database->set_charset('utf8mb4');
 
-/* Make sure the license is correct */
-$response = Unirest\Request::post($altumcode_api, [], [
-    'license'           => $_POST['license_key'],
-    'url'               => $_POST['installation_url'],
-    'product_key'       => PRODUCT_KEY,
-    'product_name'      => PRODUCT_NAME,
-    'product_version'   => '57.1.0',
-    'client_email'      => $_POST['newsletter_email'],
-    'client_name'       => $_POST['newsletter_name'],
-    'server_ip'         => $_SERVER['SERVER_ADDR'],
-    'client_ip'         => get_ip(),
-]);
-
-
-if(!isset($response->body->status)) {
-    die(json_encode([
-        'status' => 'error',
-        'message' => $response->raw_body
-    ]));
-}
-
-if($response->body->status == 'error') {
-    die(json_encode([
-        'status' => 'error',
-        'message' => $response->body->message
-    ]));
-}
-
 /* Success check */
-if($response->body->status == 'success') {
+if(true) {
 
     /* Prepare the config file content */
     $config_content =
@@ -134,22 +84,6 @@ ALTUM;
                 'status' => 'error',
                 'message' => 'Error when running the database queries: ' . $database->error
             ]));
-        }
-    }
-
-    /* Run external SQL if needed */
-    if(!empty($response->body->sql)) {
-        $dump = array_filter(explode('-- SEPARATOR --', $response->body->sql));
-
-        foreach($dump as $query) {
-            $database->query($query);
-
-            if($database->error) {
-                die(json_encode([
-                    'status' => 'error',
-                    'message' => 'Error when running the database queries: ' . $database->error
-                ]));
-            }
         }
     }
 

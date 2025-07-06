@@ -1,9 +1,0 @@
-[05-Jul-2025 09:50:42 UTC] PHP Deprecated:  Creation of dynamic property WhichBrowser\Model\Os::$build is deprecated in /home/gponzghq/app.seamlessqrcode.com/vendor/nadar/parser/src/Analyser/Header/Useragent/Os.php on line 609
-[05-Jul-2025 21:36:56 UTC] PHP Fatal error:  Uncaught TypeError: chr(): Argument #1 ($codepoint) must be of type int, string given in /home/gponzghq/app.seamlessqrcode.com/app/controllers/Tools.php:3739
-Stack trace:
-#0 /home/gponzghq/app.seamlessqrcode.com/app/controllers/Tools.php(3739): chr()
-#1 [internal function]: Altum\Controllers\Tools->ascii_converter()
-#2 /home/gponzghq/app.seamlessqrcode.com/app/core/App.php(286): call_user_func_array()
-#3 /home/gponzghq/app.seamlessqrcode.com/index.php(22): Altum\App->__construct()
-#4 {main}
-  thrown in /home/gponzghq/app.seamlessqrcode.com/app/controllers/Tools.php on line 3739

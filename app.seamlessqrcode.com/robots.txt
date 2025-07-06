@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://app.seamlessqrcode.com/sitemap
+User-agent: GPTBot
+User-agent: Google-Extended
+Disallow: /

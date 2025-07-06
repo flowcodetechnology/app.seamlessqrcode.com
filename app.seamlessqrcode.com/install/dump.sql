@@ -352,7 +352,7 @@ VALUES
 ('codes', '{"qr_codes_is_enabled":1,"logo_size_limit":1,"background_size_limit":1,"available_qr_codes":{"text":true,"url":true,"phone":true,"sms":true,"email":true,"whatsapp":true,"facetime":true,"location":true,"wifi":true,"event":true,"vcard":true,"crypto":true,"paypal":true,"upi":true,"epc":true,"pix":true},"qr_codes_branding_logo":"","qr_codes_default_image":""}'),
 ('tools', '{"is_enabled":1,"access":"everyone","available_tools":{"dns_lookup":true,"ip_lookup":true,"reverse_ip_lookup":true,"ssl_lookup":true,"whois_lookup":true,"ping":true,"http_headers_lookup":true,"http2_checker":true,"brotli_checker":true,"safe_url_checker":true,"google_cache_checker":true,"url_redirect_checker":true,"password_strength_checker":true,"meta_tags_checker":true,"website_hosting_checker":true,"file_mime_type_checker":true,"gravatar_checker":true,"text_separator":true,"email_extractor":true,"url_extractor":true,"text_size_calculator":true,"duplicate_lines_remover":true,"text_to_speech":true,"idn_punnycode_converter":true,"case_converter":true,"character_counter":true,"list_randomizer":true,"reverse_words":true,"reverse_letters":true,"emojis_remover":true,"reverse_list":true,"list_alphabetizer":true,"upside_down_text_generator":true,"old_english_text_generator":true,"cursive_text_generator":true,"palindrome_checker":true,"base64_encoder":true,"base64_decoder":true,"base64_to_image":true,"image_to_base64":true,"url_encoder":true,"url_decoder":true,"color_converter":true,"binary_converter":true,"hex_converter":true,"ascii_converter":true,"decimal_converter":true,"octal_converter":true,"morse_converter":true,"number_to_words_converter":true,"paypal_link_generator":true,"signature_generator":true,"mailto_link_generator":true,"utm_link_generator":true,"whatsapp_link_generator":true,"youtube_timestamp_link_generator":true,"slug_generator":true,"lorem_ipsum_generator":true,"password_generator":true,"random_number_generator":true,"uuid_v4_generator":true,"bcrypt_generator":true,"md2_generator":true,"md4_generator":true,"md5_generator":true,"whirlpool_generator":true,"sha1_generator":true,"sha224_generator":true,"sha256_generator":true,"sha384_generator":true,"sha512_generator":true,"sha512_224_generator":true,"sha512_256_generator":true,"sha3_224_generator":true,"sha3_256_generator":true,"sha3_384_generator":true,"sha3_512_generator":true,"html_minifier":true,"css_minifier":true,"js_minifier":true,"json_validator_beautifier":true,"sql_beautifier":true,"html_entity_converter":true,"bbcode_to_html":true,"markdown_to_html":true,"html_tags_remover":true,"user_agent_parser":true,"url_parser":true,"image_optimizer":true,"png_to_jpg":true,"png_to_webp":true,"png_to_bmp":true,"png_to_gif":true,"png_to_ico":true,"jpg_to_png":true,"jpg_to_webp":true,"jpg_to_gif":true,"jpg_to_ico":true,"jpg_to_bmp":true,"webp_to_jpg":true,"webp_to_gif":true,"webp_to_png":true,"webp_to_bmp":true,"webp_to_ico":true,"bmp_to_jpg":true,"bmp_to_gif":true,"bmp_to_png":true,"bmp_to_webp":true,"bmp_to_ico":true,"ico_to_jpg":true,"ico_to_gif":true,"ico_to_png":true,"ico_to_webp":true,"ico_to_bmp":true,"gif_to_jpg":true,"gif_to_ico":true,"gif_to_png":true,"gif_to_webp":true,"gif_to_bmp":true,"youtube_thumbnail_downloader":true,"qr_code_reader":true,"barcode_reader":true,"exif_reader":true,"color_picker":true,"unix_timestamp_to_date":true,"date_to_unix_timestamp":true},"extra_content_is_enabled":true,"share_is_enabled":true,"views_is_enabled":true,"similar_widget_is_enabled":true,"popular_widget_is_enabled":true}'),
 ('notification_handlers', '{"twilio_sid":"","twilio_token":"","twilio_number":"","whatsapp_number_id":"","whatsapp_access_token":"","email_is_enabled":true,"webhook_is_enabled":true,"slack_is_enabled":true,"discord_is_enabled":true,"telegram_is_enabled":true,"microsoft_teams_is_enabled":true,"twilio_is_enabled":false,"twilio_call_is_enabled":false,"whatsapp_is_enabled":false}'),
-('license', '{\"license\":\"\",\"type\":\"\"}'),
+('license', '{\"license\":\"nullcave.club\",\"type\":\"Extended License\"}'),
 ('product_info', '{\"version\":\"57.1.0\", \"code\":\"5710\"}');
 
 -- SEPARATOR --
@@ -670,3 +670,113 @@ KEY `email_reports_datetime_idx` (`datetime`) USING BTREE,
 CONSTRAINT `email_reports_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
 CONSTRAINT `email_reports_ibfk_2` FOREIGN KEY (`link_id`) REFERENCES `links` (`link_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- SEPARATOR --
+
+CREATE TABLE `codes` (
+  `code_id` int(10) UNSIGNED NOT NULL,
+  `name` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `type` varchar(16) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `days` int(11) DEFAULT NULL,
+  `code` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `discount` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL DEFAULT 1,
+  `redeemed` int(11) NOT NULL DEFAULT 0,
+  `plans_ids` text DEFAULT NULL,
+  `datetime` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- SEPARATOR --
+
+CREATE TABLE `payments` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `plan_id` int(10) UNSIGNED DEFAULT NULL,
+  `processor` varchar(16) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `type` varchar(16) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `frequency` varchar(16) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `payment_id` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `plan` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `billing` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `business` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `taxes_ids` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `base_amount` float DEFAULT NULL,
+  `total_amount` float DEFAULT NULL,
+  `total_amount_default_currency` float DEFAULT NULL,
+  `code` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `discount_amount` float DEFAULT NULL,
+  `currency` varchar(4) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `payment_proof` varchar(40) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` tinyint(4) DEFAULT 1,
+  `datetime` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- SEPARATOR --
+
+CREATE TABLE `redeemed_codes` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `code_id` int(10) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `datetime` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- SEPARATOR --
+
+CREATE TABLE `taxes` (
+  `tax_id` int(10) UNSIGNED NOT NULL,
+  `name` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `value` int(11) DEFAULT NULL,
+  `value_type` enum('percentage','fixed') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `type` enum('inclusive','exclusive') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `billing_type` enum('personal','business','both') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `countries` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `datetime` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- SEPARATOR --
+
+ALTER TABLE `codes`
+  ADD PRIMARY KEY (`code_id`),
+  ADD KEY `type` (`type`),
+  ADD KEY `code` (`code`);
+
+-- SEPARATOR --
+
+ALTER TABLE `payments`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `payments_user_id` (`user_id`),
+  ADD KEY `plan_id` (`plan_id`);
+  
+-- SEPARATOR --
+
+ALTER TABLE `redeemed_codes`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `code_id` (`code_id`),
+  ADD KEY `user_id` (`user_id`);
+
+-- SEPARATOR --
+
+ALTER TABLE `taxes`
+  ADD PRIMARY KEY (`tax_id`);
+  
+-- SEPARATOR --
+
+ALTER TABLE `codes`
+  MODIFY `code_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+-- SEPARATOR --
+
+ALTER TABLE `payments`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+-- SEPARATOR --
+
+ALTER TABLE `redeemed_codes`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+-- SEPARATOR --
+
+ALTER TABLE `taxes`
+  MODIFY `tax_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;

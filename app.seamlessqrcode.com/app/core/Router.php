@@ -714,13 +714,6 @@ class Router {
                     'currency_switcher' => true,
                 ],
             ],
-            'lifetime' => [
-                'controller' => 'Lifetime',
-                'settings' => [
-                    'currency_switcher' => true
-                ]
-            ],
-
 
             'pay' => [
                 'controller' => 'Pay',

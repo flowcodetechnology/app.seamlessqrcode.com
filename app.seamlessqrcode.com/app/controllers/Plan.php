@@ -1,9 +1,21 @@
 <?php
 /*
  * Copyright (c) 2025 AltumCode (https://altumcode.com/)
+ *
+ * This software is licensed exclusively by AltumCode and is sold only via https://altumcode.com/.
+ * Unauthorized distribution, modification, or use of this software without a valid license is not permitted and may be subject to applicable legal actions.
+ *
+ * 🌍 View all other existing AltumCode projects via https://altumcode.com/
+ * 📧 Get in touch for support or general queries via https://altumcode.com/contact
+ * 📤 Download the latest version via https://altumcode.com/downloads
+ *
+ * 🐦 X/Twitter: https://x.com/AltumCode
+ * 📘 Facebook: https://facebook.com/altumcode
+ * 📸 Instagram: https://instagram.com/altumcode
  */
 
 namespace Altum\Controllers;
+
 
 use Altum\Title;
 
@@ -24,23 +36,18 @@ class Plan extends Controller {
             redirect('plan/new');
         }
 
+        
+
         /* Set a custom title */
         Title::set(l('plan.header_' . $type));
 
-        /* ✅ Load all plans */
-        $all_plans = (new \Altum\Models\Plan())->get_plans();
+        /* Plans View */
+        $data = [];
 
-        /* ✅ Exclude lifetime plans */
-        $non_lifetime_plans = array_filter($all_plans, function($plan) {
-            return $plan->status == 1 && (
-                !isset($plan->prices->lifetime->{currency()}) ||
-                $plan->prices->lifetime->{currency()} <= 0
-            );
-        });
-
-        /* ✅ Pass filtered plans into the partial view */
         $view = new \Altum\View('partials/plans', (array) $this);
-        $this->add_view_content('plans', $view->run(['plans' => $non_lifetime_plans]));
+
+        $this->add_view_content('plans', $view->run($data));
+
 
         /* Prepare the view */
         $data = [
@@ -48,6 +55,9 @@ class Plan extends Controller {
         ];
 
         $view = new \Altum\View('plan/index', (array) $this);
+
         $this->add_view_content('content', $view->run($data));
+
     }
+
 }

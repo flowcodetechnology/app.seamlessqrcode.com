@@ -3,12 +3,10 @@
 <?php if(settings()->payment->is_enabled): ?>
 
     <?php
-        $available_payment_frequencies = [];
-    
-    /* Use passed-in $plans if available */
-    if(!isset($plans)) {
-        $plans = (new \Altum\Models\Plan())->get_plans();
-    }
+    $plans = [];
+    $available_payment_frequencies = [];
+
+    $plans = (new \Altum\Models\Plan())->get_plans();
 
     foreach($plans as $plan) {
         if($plan->status != 1) continue;
@@ -51,22 +49,13 @@
         <div class="mb-5 text-center">
             <div class="btn-group btn-group-toggle btn-group-custom" data-toggle="buttons">
 
-            <?php
-            $frequencies = \Altum\Router::$controller == 'Lifetime'
-                ? ['lifetime']
-                : ['monthly', 'quarterly', 'biannual', 'annual'];
-            ?>
-
-            <?php foreach($frequencies as $frequency): ?>
-                <?php if(isset($available_payment_frequencies[$frequency])): ?>
-                    <label class="btn <?= settings()->payment->default_payment_frequency == $frequency ? 'active' : null ?>" data-payment-frequency="<?= $frequency ?>">
-                        <input type="radio" name="payment_frequency" <?= settings()->payment->default_payment_frequency == $frequency ? 'checked="checked"' : null ?>>
-                        <?= l('plan.custom_plan.' . $frequency) ?>
-                    </label>
-                <?php endif ?>
-            <?php endforeach ?>
-
-
+                <?php foreach(['monthly', 'quarterly', 'biannual', 'annual', 'lifetime'] as $frequency): ?>
+                    <?php if(isset($available_payment_frequencies[$frequency])): ?>
+                        <label class="btn <?= settings()->payment->default_payment_frequency == $frequency ? 'active' : null ?>" data-payment-frequency="<?= $frequency ?>">
+                            <input type="radio" name="payment_frequency" <?= settings()->payment->default_payment_frequency == $frequency ? 'checked="checked"' : null ?>> <?= l('plan.custom_plan.' . $frequency) ?>
+                        </label>
+                    <?php endif ?>
+                <?php endforeach ?>
 
             </div>
         </div>
@@ -189,7 +178,7 @@
 
                     frequencies.forEach(freq => {
                         const $el = $(`[data-plan-payment-frequency="${freq}"]`);
-                        if (freq === payment_frequency) {
+                        if(freq === payment_frequency) {
                             $el.removeClass('d-none').addClass('d-inline-block');
                         } else {
                             $el.removeClass('d-inline-block').addClass('d-none');
@@ -205,11 +194,7 @@
 
                 $('[data-payment-frequency]').on('click', payment_frequency_handler);
 
-                // Automatically select the first visible button (lifetime only on /lifetime)
-                let $defaultBtn = $(`[data-payment-frequency].btn:visible`).first();
-                $defaultBtn.addClass('active').find('input').prop('checked', true);
-                payment_frequency_handler({ currentTarget: $defaultBtn.get(0) });
-
+                payment_frequency_handler();
             </script>
         <?php \Altum\Event::add_content(ob_get_clean(), 'javascript') ?>
 
@@ -276,7 +261,7 @@ if(settings()->plan_custom->status) {
     ];
 }
 
-if (settings()->payment->is_enabled) {
+if(settings()->payment->is_enabled) {
     foreach($plans as $plan) {
         if($plan->status != 1) continue;
 

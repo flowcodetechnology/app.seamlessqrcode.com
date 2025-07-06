@@ -131,7 +131,7 @@
 
         $plan_language_keys = [];
         foreach ($language_array as $key => $value) {
-            if (preg_match('/plan\.faq\.(\w+)\./', $key, $matches)) {
+            if(preg_match('/plan\.faq\.(\w+)\./', $key, $matches)) {
                 $plan_language_keys[] = $matches[1];
             }
         }
