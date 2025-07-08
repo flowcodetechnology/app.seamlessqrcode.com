@@ -25,8 +25,9 @@ class FlipbookCreate extends Controller {
 
         /* Check for the plan limit */
         $total_rows = database()->query("SELECT COUNT(*) AS `total` FROM `flipbooks` WHERE `user_id` = {$this->user->user_id}")->fetch_object()->total ?? 0;
+        $flipbooks_limit = $this->user->plan_settings->flipbooks_limit ?? 0;
 
-        if($this->user->plan_settings->flipbooks_limit != -1 && $total_rows >= $this->user->plan_settings->flipbooks_limit) {
+        if($flipbooks_limit != -1 && $total_rows >= $flipbooks_limit) {
             Alerts::add_info(l('global.info_message.plan_feature_limit'));
             redirect('flipbooks');
         }
@@ -72,6 +73,7 @@ class FlipbookCreate extends Controller {
                 $file_extension = explode('.', $file_name);
                 $file_extension = mb_strtolower(end($file_extension));
                 $file_temp = $_FILES['source']['tmp_name'];
+                $flipbook_max_size_mb = $this->user->plan_settings->flipbook_max_size_mb ?? 0;
 
                 if($_FILES['source']['error'] == UPLOAD_ERR_INI_SIZE) {
                     Alerts::add_error(sprintf(l('global.error_message.file_size_limit'), settings()->main->max_file_size_mb));
@@ -81,8 +83,8 @@ class FlipbookCreate extends Controller {
                     Alerts::add_field_error('source', l('global.error_message.invalid_file_type'));
                 }
 
-                if(($_FILES['source']['size'] > $this->user->plan_settings->flipbook_max_size_mb * 1024 * 1024)) {
-                    Alerts::add_field_error('source', sprintf(l('global.error_message.file_size_limit'), $this->user->plan_settings->flipbook_max_size_mb));
+                if(($_FILES['source']['size'] > $flipbook_max_size_mb * 1024 * 1024)) {
+                    Alerts::add_field_error('source', sprintf(l('global.error_message.file_size_limit'), $flipbook_max_size_mb));
                 }
             }
 
@@ -115,7 +117,7 @@ class FlipbookCreate extends Controller {
             $settings['print'] = $_POST['print'] = isset($_POST['print']);
             $settings['download'] = $_POST['download'] = isset($_POST['download']);
 
-            if($this->user->plan_settings->enabled_flipbook_custom_branding) {
+            if($this->user->plan_settings->enabled_flipbook_custom_branding ?? false) {
                 $settings['custom_branding']['name'] = input_clean($_POST['custom_branding_name'], 64);
                 $settings['custom_branding']['url'] = input_clean($_POST['custom_branding_url'], 512);
             }
