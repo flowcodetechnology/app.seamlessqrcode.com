@@ -1,18 +1,5 @@
 <?php
-/*
- * Copyright (c) 2025 AltumCode (https://altumcode.com/)
- *
- * This software is licensed exclusively by AltumCode and is sold only via https://altumcode.com/.
- * Unauthorized distribution, modification, or use of this software without a valid license is not permitted and may be subject to applicable legal actions.
- *
- * 🌍 View all other existing AltumCode projects via https://altumcode.com/
- * 📧 Get in touch for support or general queries via https://altumcode.com/contact
- * 📤 Download the latest version via https://altumcode.com/downloads
- *
- * 🐦 X/Twitter: https://x.com/AltumCode
- * 📘 Facebook: https://facebook.com/altumcode
- * 📸 Instagram: https://instagram.com/altumcode
- */
+
 
 namespace Altum\Controllers;
 
@@ -102,7 +89,7 @@ class Link extends Controller {
         $this->link->pixels_ids = json_decode($this->link->pixels_ids ?? '[]');
 
         /* Determine the actual full url */
-        if(in_array($this->type, ['link', 'file', 'vcard', 'event'])) {
+        if(in_array($this->type, ['link', 'file', 'vcard', 'event', 'flipbook'])) {
             $this->link->full_url = $domain_id && !isset($_GET['link_id']) ? \Altum\Router::$data['domain']->scheme . \Altum\Router::$data['domain']->host . '/' . (\Altum\Router::$data['domain']->link_id == $this->link->link_id ? null : $this->link->url) : SITE_URL . $this->link->url;
         } else {
             $this->link->full_url = SITE_URL . 'l/link?biolink_block_id=' . $this->link->biolink_block_id;
@@ -298,7 +285,20 @@ class Link extends Controller {
                 /* Process biolink page */
                 $this->process_biolink();
 
-            } else if($this->link->type == 'link') {
+            }
+
+            else if($this->link->type == 'flipbook') {
+
+                /* Store statistics */
+                $this->create_statistics();
+
+                /* Redirect to the flipbook page */
+                header('Location: ' . url('f/' . $this->link->url));
+                die();
+
+            }
+
+            else if($this->link->type == 'link') {
 
                 /* Store statistics */
                 $this->create_statistics();
@@ -1151,8 +1151,8 @@ class Link extends Controller {
                 'twilio_call_url'     => SITE_URL .
                     'twiml/biolink_block.simple_notification?param1=' .
                     urlencode($biolink_block->settings->name ?? '') .
-                    '&param2=' . urlencode($link->url) .
-                    '&param3=&param4=' . urlencode($notification_data['url']),
+                    '¶m2=' . urlencode($link->url) .
+                    '¶m3=¶m4=' . urlencode($notification_data['url']),
 
                 /* Internal notification */
                 'internal_icon'       => 'fas fa-database',
@@ -1308,8 +1308,8 @@ class Link extends Controller {
                 'twilio_call_url'       => SITE_URL .
                     'twiml/biolink_block.simple_notification?param1=' .
                     urlencode($biolink_block->settings->name ?? '') .
-                    '&param2=' . urlencode($link->url) .
-                    '&param3=&param4=' . urlencode($notification_data['url']),
+                    '¶m2=' . urlencode($link->url) .
+                    '¶m3=¶m4=' . urlencode($notification_data['url']),
 
                 /* Internal notification */
                 'internal_icon'         => 'fas fa-database',
@@ -1463,8 +1463,8 @@ class Link extends Controller {
                 'twilio_call_url' => SITE_URL .
                     'twiml/biolink_block.simple_notification?param1=' .
                     urlencode($biolink_block->settings->name ?? '') .
-                    '&param2=' . urlencode($link->url) .
-                    '&param3=&param4=' . urlencode($notification_data['url']),
+                    '¶m2=' . urlencode($link->url) .
+                    '¶m3=¶m4=' . urlencode($notification_data['url']),
 
                 /* Internal notification */
                 'internal_icon' => 'fas fa-database',
@@ -1682,8 +1682,8 @@ class Link extends Controller {
                 'twilio_call_url'     => SITE_URL .
                     'twiml/biolink_block.simple_notification?param1=' .
                     urlencode($biolink_block->settings->name ?? '') .
-                    '&param2=' . urlencode($link->url) .
-                    '&param3=&param4=' . urlencode($notification_data['url']),
+                    '¶m2=' . urlencode($link->url) .
+                    '¶m3=¶m4=' . urlencode($notification_data['url']),
 
                 /* internal notification */
                 'internal_icon'       => 'fas fa-database',
