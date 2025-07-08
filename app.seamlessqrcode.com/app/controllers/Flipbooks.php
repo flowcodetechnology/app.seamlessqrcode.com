@@ -18,7 +18,7 @@ class Flipbooks extends Controller {
         }
 
         /* Prepare the filtering system */
-        $filters = (new \Altum\Filters(['project_id'], ['name', 'url'], ['datetime', 'last_datetime', 'name', 'page_views']));
+        $filters = (new \Altum\Filters(['project_id'], ['name'], ['datetime', 'last_datetime', 'name', 'page_views']));
         $filters->set_default_order_by('flipbook_id', $this->user->preferences->default_order_type ?? settings()->main->default_order_type);
         $filters->set_default_results_per_page($this->user->preferences->default_results_per_page ?? settings()->main->default_results_per_page);
 
@@ -29,28 +29,34 @@ class Flipbooks extends Controller {
         /* Get the flipbooks list for the user */
         $flipbooks = [];
         $flipbooks_result = database()->query("
-            SELECT
-                `flipbooks`.*,
-                `links`.`url` AS `full_url`,
-                `links`.`is_enabled`,
-                `domains`.`scheme`, `domains`.`host`
-            FROM
-                `flipbooks`
-            LEFT JOIN
-                `links` ON `flipbooks`.`link_id` = `links`.`link_id`
-            LEFT JOIN 
-                `domains` ON `links`.`domain_id` = `domains`.`domain_id`
-            WHERE
-                `flipbooks`.`user_id` = {$this->user->user_id}
-                {$filters->get_sql_where('flipbooks')}
-                {$filters->get_sql_order_by('flipbooks')}
-                {$paginator->get_sql_limit()}
+            SELECT 
+                `flipbooks`.*, 
+                `links`.`url` AS `full_url`, 
+                `links`.`is_enabled`
+            FROM `flipbooks` 
+            LEFT JOIN `links` ON `flipbooks`.`link_id` = `links`.`link_id`
+            WHERE `flipbooks`.`user_id` = {$this->user->user_id} 
+            {$filters->get_sql_where('flipbooks')} 
+            {$filters->get_sql_order_by('flipbooks')} 
+            {$paginator->get_sql_limit()}
         ");
 
+        /* Iterate over the results */
         while($row = $flipbooks_result->fetch_object()) {
-            $row->full_url = $row->host ? $row->scheme . $row->host . '/' . $row->full_url : url('f/' . $row->full_url);
+            if($row->link_id && $link = db()->where('link_id', $row->link_id)->getOne('links', ['domain_id', 'url'])) {
+                if($link->domain_id && $domain = (new \Altum\Models\Domain())->get_domain_by_id($link->domain_id)) {
+                    $row->full_url = $domain->scheme . $domain->host . '/' . $link->url;
+                } else {
+                    $row->full_url = url('f/' . $link->url);
+                }
+            } else {
+                $row->full_url = '#'; 
+                $row->is_enabled = 0;
+            }
+            
             $flipbooks[] = $row;
         }
+
 
         /* Export handler */
         process_export_csv($flipbooks, 'include', ['flipbook_id', 'link_id', 'project_id', 'name', 'url', 'source', 'page_views', 'datetime', 'last_datetime'], sprintf(l('flipbooks.title')));
@@ -77,10 +83,6 @@ class Flipbooks extends Controller {
 
     public function delete() {
         \Altum\Authentication::guard();
-
-        if(!settings()->flipbooks->is_enabled) {
-            redirect('not-found');
-        }
 
         /* Team checks */
         if(\Altum\Teams::is_delegated() && !\Altum\Teams::has_access('delete.flipbooks')) {
