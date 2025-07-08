@@ -1,3 +1,8 @@
+# ENABLE PHP ERROR REPORTING FOR DEBUGGING
+php_flag display_errors On
+php_value error_reporting E_ALL
+
+# THE REST OF THE ORIGINAL FILE
 Options -Indexes
 SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
 
