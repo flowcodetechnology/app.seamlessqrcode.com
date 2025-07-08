@@ -23,10 +23,13 @@ class FlipbookCreate extends Controller {
             redirect('flipbooks');
         }
 
-        /* Check for the plan limit */
+        /* Check for the plan limit (New, more robust check) */
         $total_rows = database()->query("SELECT COUNT(*) AS `total` FROM `flipbooks` WHERE `user_id` = {$this->user->user_id}")->fetch_object()->total ?? 0;
-        $flipbooks_limit = $this->user->plan_settings->flipbooks_limit ?? 0;
 
+        // Step 1: Explicitly get the limit from the user's plan settings
+        $flipbooks_limit = isset($this->user->plan_settings->flipbooks_limit) ? $this->user->plan_settings->flipbooks_limit : 0;
+
+        // Step 2: Check if the limit is not unlimited (-1) AND if the user has reached or exceeded the limit
         if($flipbooks_limit != -1 && $total_rows >= $flipbooks_limit) {
             Alerts::add_info(l('global.info_message.plan_feature_limit'));
             redirect('flipbooks');
@@ -60,8 +63,6 @@ class FlipbookCreate extends Controller {
             $_POST['url'] = !empty($_POST['url']) ? get_slug(query_clean($_POST['url'])) : false;
             $_POST['project_id'] = !empty($_POST['project_id']) && array_key_exists($_POST['project_id'], $projects) ? (int) $_POST['project_id'] : null;
 
-            //ALTUMCODE:DEMO if(DEMO) if($this->user->user_id == 1) Alerts::add_error('Please create an account on the demo to test out this function.');
-
             if(!\Altum\Csrf::check()) {
                 Alerts::add_error(l('global.error_message.invalid_csrf_token'));
             }
@@ -73,7 +74,9 @@ class FlipbookCreate extends Controller {
                 $file_extension = explode('.', $file_name);
                 $file_extension = mb_strtolower(end($file_extension));
                 $file_temp = $_FILES['source']['tmp_name'];
-                $flipbook_max_size_mb = $this->user->plan_settings->flipbook_max_size_mb ?? 0;
+
+                // New robust check for file size
+                $flipbook_max_size_mb = isset($this->user->plan_settings->flipbook_max_size_mb) ? $this->user->plan_settings->flipbook_max_size_mb : 0;
 
                 if($_FILES['source']['error'] == UPLOAD_ERR_INI_SIZE) {
                     Alerts::add_error(sprintf(l('global.error_message.file_size_limit'), settings()->main->max_file_size_mb));
@@ -83,7 +86,7 @@ class FlipbookCreate extends Controller {
                     Alerts::add_field_error('source', l('global.error_message.invalid_file_type'));
                 }
 
-                if(($_FILES['source']['size'] > $flipbook_max_size_mb * 1024 * 1024)) {
+                if($flipbook_max_size_mb != -1 && ($_FILES['source']['size'] > $flipbook_max_size_mb * 1024 * 1024)) {
                     Alerts::add_field_error('source', sprintf(l('global.error_message.file_size_limit'), $flipbook_max_size_mb));
                 }
             }
@@ -97,9 +100,6 @@ class FlipbookCreate extends Controller {
             }
 
             if(db()->where('url', $_POST['url'])->has('links')) {
-                Alerts::add_field_error('url', l('links.error_message.url_exists'));
-            }
-            if(db()->where('url', $_POST['url'])->has('flipbooks')) {
                 Alerts::add_field_error('url', l('links.error_message.url_exists'));
             }
 
@@ -117,7 +117,7 @@ class FlipbookCreate extends Controller {
             $settings['print'] = $_POST['print'] = isset($_POST['print']);
             $settings['download'] = $_POST['download'] = isset($_POST['download']);
 
-            if($this->user->plan_settings->enabled_flipbook_custom_branding ?? false) {
+            if(isset($this->user->plan_settings->enabled_flipbook_custom_branding) && $this->user->plan_settings->enabled_flipbook_custom_branding) {
                 $settings['custom_branding']['name'] = input_clean($_POST['custom_branding_name'], 64);
                 $settings['custom_branding']['url'] = input_clean($_POST['custom_branding_url'], 512);
             }
@@ -150,7 +150,7 @@ class FlipbookCreate extends Controller {
                 );
 
                 /* Database query */
-                $flipbook_id = db()->insert('flipbooks', [
+                db()->insert('flipbooks', [
                     'user_id' => $this->user->user_id,
                     'link_id' => $link_id,
                     'project_id' => $_POST['project_id'],
@@ -168,7 +168,7 @@ class FlipbookCreate extends Controller {
                 cache('flipbooks_total?user_id=' . $this->user->user_id)->delete();
 
                 Alerts::add_success(sprintf(l('global.success_message.create1'), '<strong>' . $_POST['name'] . '</strong>'));
-                redirect('flipbook-update/' . $flipbook_id);
+                redirect('flipbook-update/' . $link_id);
             }
 
         }
