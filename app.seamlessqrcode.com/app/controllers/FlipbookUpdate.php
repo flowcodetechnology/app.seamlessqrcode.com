@@ -14,13 +14,6 @@ class FlipbookUpdate extends Controller {
 
         \Altum\Authentication::guard();
         
-        // As we do not have this string yet
-        if(!\Altum\Language::get()->flipbook_update) {
-            \Altum\Language::get()->flipbook_update = new \stdClass();
-            \Altum\Language::get()->flipbook_update->breadcrumb = 'Update Flipbook';
-            \Altum\Language::get()->flipbook_update->header = 'Update Flipbook';
-        }
-
         $link_id = isset($this->params[0]) ? (int) $this->params[0] : null;
 
         if(!settings()->flipbooks->is_enabled) {
@@ -30,7 +23,8 @@ class FlipbookUpdate extends Controller {
         if(!$flipbook = db()->where('link_id', $link_id)->where('user_id', $this->user->user_id)->getOne('flipbooks')) {
             redirect('flipbooks');
         }
-        $flipbook->domain_id = db()->where('link_id', $link_id)->getValue('links', 'domain_id');
+        $link = db()->where('link_id', $link_id)->getOne('links', ['domain_id']);
+        $flipbook->domain_id = $link->domain_id;
 
         $flipbook->settings = json_decode($flipbook->settings, true); // Decode as array
 
@@ -66,10 +60,8 @@ class FlipbookUpdate extends Controller {
 
             if(empty($_POST['name'])) { Alerts::add_field_error('name', l('global.error_message.empty_field')); }
             
-            if($flipbook->url != $_POST['url'] || $flipbook->domain_id != $_POST['domain_id']) {
-                if(db()->where('url', $_POST['url'])->where('domain_id', $_POST['domain_id'])->has('links')) {
-                    Alerts::add_field_error('url', l('link.error_message.url_exists'));
-                }
+            if(($flipbook->url != $_POST['url'] || $flipbook->domain_id != $_POST['domain_id']) && db()->where('url', $_POST['url'])->where('domain_id', $_POST['domain_id'])->has('links')) {
+                Alerts::add_field_error('url', l('link.error_message.url_exists'));
             }
             
             $settings = $flipbook->settings;
@@ -97,7 +89,7 @@ class FlipbookUpdate extends Controller {
                 $location_url = url('f/' . $url);
 
                 db()->where('link_id', $link_id)->update('links', [
-                    'url' => $url, 'location_url' => $location_url, 'project_id' => $_POST['project_id'], 'domain_id' => $_POST['domain_id'],
+                    'url' => $url, 'project_id' => $_POST['project_id'], 'domain_id' => $_POST['domain_id'],
                 ]);
                 
                 db()->where('link_id', $link_id)->update('flipbooks', [

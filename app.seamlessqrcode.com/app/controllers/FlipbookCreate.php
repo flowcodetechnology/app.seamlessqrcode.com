@@ -106,11 +106,13 @@ class FlipbookCreate extends Controller {
                 $url = $_POST['url'];
                 $location_url = url('f/' . $url);
 
+                /* Create the main link */
                 $link_id = db()->insert('links', [
                     'user_id' => $this->user->user_id, 'domain_id' => $_POST['domain_id'], 'type' => 'flipbook',
-                    'url' => $url, 'location_url' => $location_url, 'datetime' => \Altum\Date::$date,
+                    'url' => $url, 'location_url' => $location_url, 'settings' => json_encode([]), 'datetime' => \Altum\Date::$date,
                 ]);
 
+                /* Create the flipbook resource */
                 db()->insert('flipbooks', [
                     'user_id' => $this->user->user_id, 'link_id' => $link_id, 'project_id' => $_POST['project_id'],
                     'name' => $_POST['name'], 'url' => $url, 'source' => $file_new_name,
