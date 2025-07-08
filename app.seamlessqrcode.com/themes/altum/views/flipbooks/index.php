@@ -16,7 +16,7 @@
 
         <div class="col-12 col-xl-auto d-flex">
             <div>
-                <?php if($this->user->plan_settings->flipbooks_limit != -1 && $data->total_flipbooks >= $this->user->plan_settings->flipbooks_limit): ?>
+                <?php if(($this->user->plan_settings->flipbooks_limit ?? 0) != -1 && $data->total_flipbooks >= ($this->user->plan_settings->flipbooks_limit ?? 0)): ?>
                     <button type="button" class="btn btn-primary disabled" data-toggle="tooltip" title="<?= l('global.info_message.plan_feature_limit') ?>">
                         <i class="fa fa-fw fa-plus-circle fa-sm mr-1"></i> <?= l('flipbooks.create') ?>
                     </button>
