@@ -14,7 +14,7 @@
                                 type="checkbox"
                                 class="custom-control-input"
                                 id="flipbook_is_enabled_<?= $data->flipbook->flipbook_id ?>"
-                                data-row-id="<?= $data->flipbook->flipbook_id ?>"
+                                data-row-id="<?= $data->flipbook->link_id ?>"
                                 onchange="ajax_call_helper(event, 'links-ajax', 'is_enabled_toggle')"
                                 <?= $data->flipbook->is_enabled ? 'checked="checked"' : null ?>
                         >
@@ -29,7 +29,7 @@
                         <div class="dropdown-menu dropdown-menu-right">
                             <a class="dropdown-item" href="<?= url('flipbook-update/' . $data->flipbook->flipbook_id) ?>"><i class="fa fa-fw fa-sm fa-pencil-alt mr-2"></i> <?= l('global.edit') ?></a>
                             <a class="dropdown-item" href="<?= url('link/' . $data->flipbook->link_id) ?>"><i class="fa fa-fw fa-sm fa-chart-bar mr-2"></i> <?= l('link.statistics.link') ?></a>
-                            <a href="#" class="dropdown-item" data-toggle="modal" data-target="#flipbook_delete_modal" data-flipbook-id="<?= $data->flipbook->flipbook_id ?>" data-resource-name="<?= $data->flipbook->name ?>"><i class="fa fa-fw fa-sm fa-trash-alt mr-2"></i> <?= l('global.delete') ?></a>
+                            <a href="#" class="dropdown-item" data-toggle="modal" data-target="#flipbook_delete_modal" data-flipbook-id="<?= $data->flipbook->flipbook_id ?>" data-resource-name="<?= e($data->flipbook->name) ?>"><i class="fa fa-fw fa-sm fa-trash-alt mr-2"></i> <?= l('global.delete') ?></a>
                         </div>
                     </div>
                 </div>
@@ -66,8 +66,15 @@
         <div class="card-footer bg-gray-50 border-0">
             <div class="d-flex flex-lg-row justify-content-lg-between">
                 <div>
-                    <i class="fa fa-fw fa-sm fa-project-diagram text-muted mr-1"></i>
-                    <a href="<?= url('flipbooks?project_id=' . $data->flipbook->project_id) ?>"><?= $data->projects[$data->flipbook->project_id]->name ?? l('projects.no_project') ?></a>
+                    <?php if($data->flipbook->project_id && isset($data->projects[$data->flipbook->project_id])): ?>
+                        <a href="<?= url('flipbooks?project_id=' . $data->flipbook->project_id) ?>" class="text-muted">
+                            <i class="fa fa-fw fa-sm fa-project-diagram text-muted mr-1"></i> <?= $data->projects[$data->flipbook->project_id]->name ?>
+                        </a>
+                    <?php else: ?>
+                        <span class="text-muted">
+                             <i class="fa fa-fw fa-sm fa-project-diagram text-muted mr-1"></i> <?= l('projects.no_project') ?>
+                        </span>
+                    <?php endif ?>
                 </div>
 
                 <div>
