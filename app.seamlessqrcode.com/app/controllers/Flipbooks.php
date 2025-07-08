@@ -32,11 +32,14 @@ class Flipbooks extends Controller {
             SELECT
                 `flipbooks`.*,
                 `links`.`url` AS `full_url`,
-                `links`.`is_enabled`
+                `links`.`is_enabled`,
+                `domains`.`scheme`, `domains`.`host`
             FROM
                 `flipbooks`
             LEFT JOIN
                 `links` ON `flipbooks`.`link_id` = `links`.`link_id`
+            LEFT JOIN 
+                `domains` ON `links`.`domain_id` = `domains`.`domain_id`
             WHERE
                 `flipbooks`.`user_id` = {$this->user->user_id}
                 {$filters->get_sql_where('flipbooks')}
@@ -45,15 +48,9 @@ class Flipbooks extends Controller {
         ");
 
         while($row = $flipbooks_result->fetch_object()) {
-            $domain_id = $row->domain_id ?? null;
-            if($domain_id && $domain = (new \Altum\Models\Domain())->get_domain_by_id($domain_id)) {
-                 $row->full_url = $domain->scheme . $domain->host . '/' . $row->full_url;
-            } else {
-                 $row->full_url = url('f/' . $row->full_url);
-            }
+            $row->full_url = $row->host ? $row->scheme . $row->host . '/' . $row->full_url : url('f/' . $row->full_url);
             $flipbooks[] = $row;
         }
-
 
         /* Export handler */
         process_export_csv($flipbooks, 'include', ['flipbook_id', 'link_id', 'project_id', 'name', 'url', 'source', 'page_views', 'datetime', 'last_datetime'], sprintf(l('flipbooks.title')));
