@@ -1,138 +1,92 @@
 <?php defined('ALTUMCODE') || die() ?>
 
-<div class="container">
-    <?= \Altum\Alerts::output_alerts() ?>
+<div class="col-12 col-md-6 col-xl-4 mb-4">
+    <div class="card h-100">
+        <div class="card-body d-flex flex-column justify-content-between">
+            <div class="d-flex justify-content-between">
+                <h2 class="h5 m-0 card-title">
+                    <a href="<?= url('flipbook-update/' . $data->flipbook->flipbook_id) ?>"><?= $data->flipbook->name ?></a>
+                </h2>
 
-    <div class="row mb-4">
-        <div class="col-12 col-xl d-flex align-items-center mb-3 mb-xl-0">
-            <h1 class="h4 m-0"><?= l('flipbooks.header') ?></h1>
+                <div class="d-flex align-items-center">
+                    <div class="custom-control custom-switch" data-toggle="tooltip" title="<?= l('links.is_enabled_tooltip') ?>">
+                        <input
+                                type="checkbox"
+                                class="custom-control-input"
+                                id="flipbook_is_enabled_<?= $data->flipbook->flipbook_id ?>"
+                                data-row-id="<?= $data->flipbook->link_id ?>"
+                                onchange="ajax_call_helper(event, 'links-ajax', 'is_enabled_toggle')"
+                                <?= $data->flipbook->is_enabled ? 'checked="checked"' : null ?>
+                        >
+                        <label class="custom-control-label" for="flipbook_is_enabled_<?= $data->flipbook->flipbook_id ?>"></label>
+                    </div>
 
-            <div class="ml-2">
-                <span data-toggle="tooltip" title="<?= l('flipbooks.subheader') ?>">
-                    <i class="fa fa-fw fa-info-circle text-muted"></i>
-                </span>
-            </div>
-        </div>
+                    <div class="dropdown">
+                        <button type="button" class="btn btn-link text-secondary dropdown-toggle-simple" data-toggle="dropdown" data-boundary="viewport">
+                            <i class="fa fa-fw fa-ellipsis-v"></i>
+                        </button>
 
-        <div class="col-12 col-xl-auto d-flex">
-            <div>
-                <?php if($this->user->plan_settings->flipbooks_limit != -1 && $data->total_flipbooks >= $this->user->plan_settings->flipbooks_limit): ?>
-                    <button type="button" class="btn btn-primary disabled" data-toggle="tooltip" title="<?= l('global.info_message.plan_feature_limit') ?>">
-                        <i class="fa fa-fw fa-plus-circle fa-sm mr-1"></i> <?= l('flipbooks.create') ?>
-                    </button>
-                <?php else: ?>
-                    <a href="<?= url('flipbook-create') ?>" class="btn btn-primary">
-                        <i class="fa fa-fw fa-plus-circle fa-sm mr-1"></i> <?= l('flipbooks.create') ?>
-                    </a>
-                <?php endif ?>
-            </div>
-
-            <div class="ml-3">
-                <div class="dropdown">
-                    <button type="button" class="btn btn-gray-300 dropdown-toggle-simple" data-toggle="dropdown" data-boundary="viewport" data-tooltip title="<?= l('global.export') ?>">
-                        <i class="fa fa-fw fa-sm fa-download"></i>
-                    </button>
-
-                    <div class="dropdown-menu dropdown-menu-right d-print-none">
-                        <a href="<?= url('flipbooks?' . $data->filters->get_get() . '&export=csv') ?>" target="_blank" class="dropdown-item">
-                            <i class="fa fa-fw fa-sm fa-file-csv mr-2"></i> <?= sprintf(l('global.export_to'), 'CSV') ?>
-                        </a>
-                        <a href="<?= url('flipbooks?' . $data->filters->get_get() . '&export=json') ?>" target="_blank" class="dropdown-item">
-                            <i class="fa fa-fw fa-sm fa-file-code mr-2"></i> <?= sprintf(l('global.export_to'), 'JSON') ?>
-                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <a class="dropdown-item" href="<?= url('flipbook-update/' . $data->flipbook->flipbook_id) ?>"><i class="fa fa-fw fa-sm fa-pencil-alt mr-2"></i> <?= l('global.edit') ?></a>
+                            <a class="dropdown-item" href="<?= url('link/' . $data->flipbook->link_id) ?>"><i class="fa fa-fw fa-sm fa-chart-bar mr-2"></i> <?= l('link.statistics.link') ?></a>
+                            <a href="#" class="dropdown-item" data-toggle="modal" data-target="#flipbook_delete_modal" data-flipbook-id="<?= $data->flipbook->flipbook_id ?>" data-resource-name="<?= e($data->flipbook->name) ?>"><i class="fa fa-fw fa-sm fa-trash-alt mr-2"></i> <?= l('global.delete') ?></a>
+                        </div>
                     </div>
                 </div>
+
             </div>
 
-            <div class="ml-3">
-                <div class="dropdown">
-                    <button type="button" class="btn btn-gray-300 dropdown-toggle-simple" data-toggle="dropdown" data-boundary="viewport" data-tooltip title="<?= l('global.filters.header') ?>">
-                        <i class="fa fa-fw fa-sm fa-filter"></i>
+            <p class="m-0">
+                <small class="text-muted">
+                    <i class="fa fa-fw fa-sm fa-link text-muted mr-1"></i>
+                    <a href="<?= $data->flipbook->full_url ?>" target="_blank" rel="noreferrer"><?= remove_url_protocol_from_url($data->flipbook->full_url) ?></a>
+                    <button
+                            type="button"
+                            class="btn btn-link btn-sm"
+                            data-toggle="tooltip"
+                            title="<?= l('global.clipboard_copy') ?>"
+                            aria-label="<?= l('global.clipboard_copy') ?>"
+                            data-copy="<?= l('global.clipboard_copy') ?>"
+                            data-copied="<?= l('global.clipboard_copied') ?>"
+                            data-clipboard-text="<?= $data->flipbook->full_url ?>"
+                    >
+                        <i class="fa fa-fw fa-sm fa-copy"></i>
                     </button>
+                </small>
+            </p>
 
-                    <div class="dropdown-menu dropdown-menu-right d-print-none">
-                        <form action="" method="get" role="form">
-                            <div class="form-group px-4">
-                                <label for="filters_search" class="small"><?= l('global.filters.search') ?></label>
-                                <input type="search" name="search" id="filters_search" class="form-control form-control-sm" value="<?= $data->filters->search ?>" />
-                            </div>
+            <p class="m-0">
+                <small class="text-muted" data-toggle="tooltip" title="<?= \Altum\Date::get($data->flipbook->datetime, 1) ?>">
+                    <i class="fa fa-fw fa-sm fa-calendar text-muted mr-1"></i>
+                    <?= sprintf(l('global.datetime_heighlight'), \Altum\Date::get($data->flipbook->datetime, 2)) ?>
+                </small>
+            </p>
+        </div>
 
-                            <div class="form-group px-4">
-                                <label for="filters_search_by" class="small"><?= l('global.filters.search_by') ?></label>
-                                <select name="search_by" id="filters_search_by" class="form-control form-control-sm">
-                                    <option value="name" <?= $data->filters->search_by == 'name' ? 'selected="selected"' : null ?>><?= l('flipbooks.table.name') ?></option>
-                                    <option value="url" <?= $data->filters->search_by == 'url' ? 'selected="selected"' : null ?>><?= l('flipbooks.table.url') ?></option>
-                                </select>
-                            </div>
+        <div class="card-footer bg-gray-50 border-0">
+            <div class="d-flex flex-lg-row justify-content-lg-between">
+                <div>
+                    <?php if($data->flipbook->project_id): ?>
+                        <a href="<?= url('flipbooks?project_id=' . $data->flipbook->project_id) ?>" class="text-muted">
+                            <i class="fa fa-fw fa-sm fa-project-diagram text-muted mr-1"></i> <?= $data->projects[$data->flipbook->project_id]->name ?>
+                        </a>
+                    <?php else: ?>
+                        <span class="text-muted">
+                             <i class="fa fa-fw fa-sm fa-project-diagram text-muted mr-1"></i> <?= l('projects.no_project') ?>
+                        </span>
+                    <?php endif ?>
+                </div>
 
-                            <div class="form-group px-4">
-                                <label for="filters_project_id" class="small"><?= l('projects.project_id') ?></label>
-                                <select name="project_id" id="filters_project_id" class="form-control form-control-sm">
-                                    <option value=""><?= l('global.filters.all') ?></option>
-                                    <?php foreach($data->projects as $project_id => $project): ?>
-                                    <option value="<?= $project_id ?>" <?= isset($data->filters->filters['project_id']) && $data->filters->filters['project_id'] == $project_id ? 'selected="selected"' : null ?>><?= $project->name ?></option>
-                                    <?php endforeach ?>
-                                </select>
-                            </div>
-
-                            <div class="form-group px-4">
-                                <label for="filters_order_by" class="small"><?= l('global.filters.order_by') ?></label>
-                                <select name="order_by" id="filters_order_by" class="form-control form-control-sm">
-                                    <option value="datetime" <?= $data->filters->order_by == 'datetime' ? 'selected="selected"' : null ?>><?= l('global.filters.order_by_datetime') ?></option>
-                                    <option value="last_datetime" <?= $data->filters->order_by == 'last_datetime' ? 'selected="selected"' : null ?>><?= l('global.filters.order_by_last_datetime') ?></option>
-                                    <option value="name" <?= $data->filters->order_by == 'name' ? 'selected="selected"' : null ?>><?= l('global.filters.order_by_name') ?></option>
-                                    <option value="page_views" <?= $data->filters->order_by == 'page_views' ? 'selected="selected"' : null ?>><?= l('flipbooks.page_views') ?></option>
-                                </select>
-                            </div>
-
-                            <div class="form-group px-4">
-                                <label for="filters_order_type" class="small"><?= l('global.filters.order_type') ?></label>
-                                <select name="order_type" id="filters_order_type" class="form-control form-control-sm">
-                                    <option value="ASC" <?= $data->filters->order_type == 'ASC' ? 'selected="selected"' : null ?>><?= l('global.filters.order_type_asc') ?></option>
-                                    <option value="DESC" <?= $data->filters->order_type == 'DESC' ? 'selected="selected"' : null ?>><?= l('global.filters.order_type_desc') ?></option>
-                                </select>
-                            </div>
-
-                            <div class="form-group px-4">
-                                <label for="filters_results_per_page" class="small"><?= l('global.filters.results_per_page') ?></label>
-                                <select name="results_per_page" id="filters_results_per_page" class="form-control form-control-sm">
-                                    <?php foreach($data->filters->allowed_results_per_page as $key): ?>
-                                        <option value="<?= $key ?>" <?= $data->filters->results_per_page == $key ? 'selected="selected"' : null ?>><?= $key ?></option>
-                                    <?php endforeach ?>
-                                </select>
-                            </div>
-
-                            <div class="form-group px-4 mt-4">
-                                <button type="submit" name="submit" class="btn btn-sm btn-primary btn-block"><?= l('global.submit') ?></button>
-                            </div>
-                        </form>
-                    </div>
+                <div>
+                    <a href="<?= url('link/' . $data->flipbook->link_id) ?>" class="text-muted" data-toggle="tooltip" title="<?= l('flipbooks.page_views') ?>">
+                        <i class="fa fa-fw fa-sm fa-chart-bar mr-1"></i>
+                        <?= nr($data->flipbook->page_views) ?>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
-
-    <?php if(count($data->flipbooks)): ?>
-        <div class="row">
-            <?php foreach($data->flipbooks as $row): ?>
-                <?= (new \Altum\View('flipbooks/flipbook_widget', ['view' => 'self', 'data' => ['flipbook' => $row, 'projects' => $data->projects]])->run()) ?>
-            <?php endforeach ?>
-        </div>
-
-        <div class="mt-3"><?= $data->pagination ?></div>
-    <?php else: ?>
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex flex-column align-items-center justify-content-center py-3">
-                    <img src="<?= ASSETS_FULL_URL . 'images/no_rows.svg' ?>" class="col-10 col-md-7 col-lg-4 mb-3" alt="<?= l('flipbooks.no_data') ?>" />
-                    <h2 class="h4 text-muted"><?= l('flipbooks.no_data') ?></h2>
-                    <p class="text-muted"><?= l('flipbooks.no_data_help') ?></p>
-                </div>
-            </div>
-        </div>
-    <?php endif ?>
 </div>
-
 <?php \Altum\Event::add_content(include_view(THEME_PATH . 'views/partials/universal_delete_modal_url.php', [
     'name' => 'flipbook',
     'resource_id' => 'flipbook_id',
