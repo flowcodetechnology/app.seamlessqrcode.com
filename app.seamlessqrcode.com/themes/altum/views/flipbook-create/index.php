@@ -28,9 +28,22 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="url"><i class="fa fa-fw fa-link fa-sm text-muted mr-1"></i> <?= l('flipbooks.table.url') ?></label>
-                    <input type="text" id="url" name="url" class="form-control" value="<?= $data->values['url'] ?>" placeholder="<?= l('global.url_placeholder') ?>" />
-                    <small class="form-text text-muted"><?= l('flipbook_create.url_help') ?></small>
+                    <label for="url"><i class="fa fa-fw fa-link fa-sm text-muted mr-1"></i> <?= l('links.create.url') ?></label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <select name="domain_id" class="appearance-none custom-select form-control input-group-text" <?= count($data->domains) > 1 ? null : 'style="border-top-right-radius: .25rem; border-bottom-right-radius: .25rem;"' ?>>
+                                <?php if(settings()->links->main_domain_is_enabled || \Altum\Authentication::is_admin()): ?>
+                                    <option value="0" <?= $data->values['domain_id'] == 0 ? 'selected="selected"' : '' ?>><?= SITE_URL ?></option>
+                                <?php endif ?>
+
+                                <?php foreach($data->domains as $row): ?>
+                                <option value="<?= $row->domain_id ?>" data-type="<?= $row->type ?>" <?= $data->values['domain_id'] == $row->domain_id ? 'selected="selected"' : '' ?>><?= $row->url ?></option>
+                                <?php endforeach ?>
+                            </select>
+                        </div>
+                        <input type="text" id="url" name="url" class="form-control" value="<?= $data->values['url'] ?>" placeholder="<?= l('links.create.url_placeholder') ?>" />
+                    </div>
+                    <small class="form-text text-muted"><?= l('links.create.url_help') ?></small>
                 </div>
 
                 <div class="form-group">
@@ -47,7 +60,7 @@
                 <div class="form-group">
                     <label for="source"><i class="fa fa-fw fa-file-pdf fa-sm text-muted mr-1"></i> <?= l('flipbook_create.source') ?></label>
                     <input id="source" type="file" name="source" accept=".pdf" class="form-control-file altum-file-input" required="required" />
-                    <small class="form-text text-muted"><?= sprintf(l('flipbook_create.source_help'), $this->user->plan_settings->flipbook_max_size_mb) ?></small>
+                    <small class="form-text text-muted"><?= sprintf(l('flipbook_create.source_help'), ($this->user->plan_settings->flipbook_max_size_mb ?? 0)) ?></small>
                 </div>
 
                 <h2 class="h5 mt-4"><?= l('flipbooks.settings') ?></h2>
@@ -134,7 +147,7 @@
                     </div>
                 </div>
 
-                <?php if($this->user->plan_settings->enabled_flipbook_custom_branding): ?>
+                <?php if(isset($this->user->plan_settings->enabled_flipbook_custom_branding) && $this->user->plan_settings->enabled_flipbook_custom_branding): ?>
                     <div class="mt-4">
                         <p class="h5"><?= l('flipbooks.settings.custom_branding') ?></p>
                         <div class="form-group">

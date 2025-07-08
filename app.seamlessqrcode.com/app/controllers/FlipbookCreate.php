@@ -4,6 +4,7 @@ namespace Altum\Controllers;
 
 use Altum\Alerts;
 use Altum\Uploads;
+use Altum\Models\Domain;
 
 defined('ALTUMCODE') || die();
 
@@ -23,17 +24,17 @@ class FlipbookCreate extends Controller {
             redirect('flipbooks');
         }
 
-        /* Check for the plan limit (New, more robust check) */
+        /* Check for the plan limit */
         $total_rows = database()->query("SELECT COUNT(*) AS `total` FROM `flipbooks` WHERE `user_id` = {$this->user->user_id}")->fetch_object()->total ?? 0;
+        $flipbooks_limit = $this->user->plan_settings->flipbooks_limit ?? 0;
 
-        // Step 1: Explicitly get the limit from the user's plan settings
-        $flipbooks_limit = isset($this->user->plan_settings->flipbooks_limit) ? $this->user->plan_settings->flipbooks_limit : 0;
-
-        // Step 2: Check if the limit is not unlimited (-1) AND if the user has reached or exceeded the limit
         if($flipbooks_limit != -1 && $total_rows >= $flipbooks_limit) {
             Alerts::add_info(l('global.info_message.plan_feature_limit'));
             redirect('flipbooks');
         }
+
+        /* Get available domains */
+        $domains = (new Domain())->get_available_domains_by_user($this->user, true);
 
         /* Existing projects */
         $projects = (new \Altum\Models\Projects())->get_projects_by_user_id($this->user->user_id);
@@ -60,13 +61,18 @@ class FlipbookCreate extends Controller {
 
         if(!empty($_POST)) {
             $_POST['name'] = trim(query_clean($_POST['name']));
-            $_POST['url'] = !empty($_POST['url']) ? get_slug(query_clean($_POST['url'])) : false;
+            $_POST['url'] = !empty($_POST['url']) && $this->user->plan_settings->custom_url ? get_slug(trim($_POST['url'])) : false;
+            $_POST['domain_id'] = isset($_POST['domain_id']) && isset($domains[$_POST['domain_id']]) ? (int) $_POST['domain_id'] : 0;
             $_POST['project_id'] = !empty($_POST['project_id']) && array_key_exists($_POST['project_id'], $projects) ? (int) $_POST['project_id'] : null;
 
             if(!\Altum\Csrf::check()) {
                 Alerts::add_error(l('global.error_message.invalid_csrf_token'));
             }
-
+            
+            if(empty($_POST['name'])) {
+                Alerts::add_field_error('name', l('global.error_message.empty_field'));
+            }
+            
             if(empty($_FILES['source']['name'])) {
                 Alerts::add_field_error('source', l('global.error_message.empty_field'));
             } else {
@@ -74,9 +80,7 @@ class FlipbookCreate extends Controller {
                 $file_extension = explode('.', $file_name);
                 $file_extension = mb_strtolower(end($file_extension));
                 $file_temp = $_FILES['source']['tmp_name'];
-
-                // New robust check for file size
-                $flipbook_max_size_mb = isset($this->user->plan_settings->flipbook_max_size_mb) ? $this->user->plan_settings->flipbook_max_size_mb : 0;
+                $flipbook_max_size_mb = $this->user->plan_settings->flipbook_max_size_mb ?? 0;
 
                 if($_FILES['source']['error'] == UPLOAD_ERR_INI_SIZE) {
                     Alerts::add_error(sprintf(l('global.error_message.file_size_limit'), settings()->main->max_file_size_mb));
@@ -91,16 +95,18 @@ class FlipbookCreate extends Controller {
                 }
             }
 
-            if(empty($_POST['name'])) {
-                Alerts::add_field_error('name', l('global.error_message.empty_field'));
+            /* Check for duplicate url if needed */
+            if($_POST['url']) {
+                if(db()->where('url', $_POST['url'])->where('domain_id', $_POST['domain_id'])->has('links')) {
+                    Alerts::add_field_error('url', l('link.error_message.url_exists'));
+                }
             }
 
             if(empty($_POST['url'])) {
                 $_POST['url'] = string_generate(10);
-            }
-
-            if(db()->where('url', $_POST['url'])->has('links')) {
-                Alerts::add_field_error('url', l('links.error_message.url_exists'));
+                while(db()->where('url', $_POST['url'])->where('domain_id', $_POST['domain_id'])->has('links')) {
+                    $_POST['url'] = string_generate(10);
+                }
             }
 
             /* Settings */
@@ -133,21 +139,17 @@ class FlipbookCreate extends Controller {
                 $settings_json = json_encode($settings);
 
                 /* Create the link for the flipbook */
-                $link = new \Altum\Models\Link();
                 $url = $_POST['url'];
                 $location_url = url('f/' . $url);
-
-                $link_id = $link->create(
-                    null,
-                    $url,
-                    $location_url,
-                    [
-                        'user_id' => $this->user->user_id,
-                        'type' => 'flipbook',
-                        'project_id' => $_POST['project_id'],
-                        'is_enabled' => 1,
-                    ]
-                );
+                $link_id = db()->insert('links', [
+                    'user_id' => $this->user->user_id,
+                    'domain_id' => $_POST['domain_id'],
+                    'type' => 'flipbook',
+                    'url' => $url,
+                    'location_url' => $location_url,
+                    'settings' => json_encode(['clicks_limit' => null, 'expiration_url' => null, 'password' => null, 'sensitive_content' => false]),
+                    'datetime' => \Altum\Date::$date,
+                ]);
 
                 /* Database query */
                 db()->insert('flipbooks', [
@@ -170,7 +172,6 @@ class FlipbookCreate extends Controller {
                 Alerts::add_success(sprintf(l('global.success_message.create1'), '<strong>' . $_POST['name'] . '</strong>'));
                 redirect('flipbook-update/' . $link_id);
             }
-
         }
 
         /* Set default values */
@@ -184,6 +185,7 @@ class FlipbookCreate extends Controller {
         /* Prepare the view */
         $data = [
             'projects' => $projects,
+            'domains' => $domains,
             'values' => $values,
         ];
 
