@@ -88,9 +88,9 @@ class Link extends Controller {
         $this->link->settings = json_decode($this->link->settings ?? '');
         $this->link->pixels_ids = json_decode($this->link->pixels_ids ?? '[]');
 
-        /* Determine the actual full url */
+               /* Determine the actual full url */
         if(in_array($this->type, ['link', 'file', 'vcard', 'event', 'flipbook'])) {
-            $this->link->full_url = $domain_id && !isset($_GET['link_id']) ? \Altum\Router::$data['domain']->scheme . \Altum\Router::$data['domain']->host . '/' . (\Altum\Router::$data['domain']->link_id == $this->link->link_id ? null : $this->link->url) : SITE_URL . $this->link->url;
+            $this->link->full_url = $domain_id ? \Altum\Router::$data['domain']->scheme . \Altum\Router::$data['domain']->host . '/' . (\Altum\Router::$data['domain']->link_id == $this->link->link_id ? null : $this->link->url) : SITE_URL . $this->link->url;
         } else {
             $this->link->full_url = SITE_URL . 'l/link?biolink_block_id=' . $this->link->biolink_block_id;
         }

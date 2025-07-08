@@ -81,7 +81,7 @@ class Flipbooks extends Controller {
         $this->add_view_content('content', $view->run($data));
     }
 
-    public function delete() {
+        public function delete() {
         \Altum\Authentication::guard();
 
         /* Team checks */
@@ -101,14 +101,26 @@ class Flipbooks extends Controller {
             redirect('flipbooks');
         }
 
-        if(!$flipbook = db()->where('flipbook_id', $flipbook_id)->where('user_id', $this->user->user_id)->getOne('flipbooks', ['flipbook_id', 'name'])) {
+        if(!$flipbook = db()->where('flipbook_id', $flipbook_id)->where('user_id', $this->user->user_id)->getOne('flipbooks', ['flipbook_id', 'name', 'link_id'])) {
             redirect('flipbooks');
         }
 
         if(!Alerts::has_field_errors() && !Alerts::has_errors()) {
+
+            /* Delete the flipbook */
             (new Flipbook())->delete($flipbook->flipbook_id);
+            
+            /* Delete the associated link */
+            db()->where('link_id', $flipbook->link_id)->delete('links');
+
+            /* Clear the cache */
+            cache()->deleteItem('links_total?user_id=' . $this->user->user_id);
+            
+            /* Set a nice success message */
             Alerts::add_success(sprintf(l('global.success_message.delete1'), '<strong>' . $flipbook->name . '</strong>'));
+
             redirect('flipbooks');
+
         }
 
         redirect('flipbooks');
