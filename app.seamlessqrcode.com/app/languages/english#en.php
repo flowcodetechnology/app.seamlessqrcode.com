@@ -4422,7 +4422,10 @@ return [
     'flipbook_create.url_help' => 'The unique URL alias for your flipbook. This will be part of the final link.',
     'flipbook_create.source' => 'PDF File',
     'flipbook_create.source_help' => 'Upload the PDF file that will be converted into a flipbook. Max file size is %s MB.',
-
+    'flipbook_create.url' => 'URL alias',
+    'flipbook_create.url_placeholder' => 'e.g., my-summer-catalog',
+    'flipbook_create.url_help' => 'Leave empty for a randomly generated one.',
+    
     // Flipbook Update
     'flipbook_update.breadcrumb' => 'Update Flipbook',
     'flipbook_update.header' => 'Update Flipbook',
@@ -4453,4 +4456,5 @@ return [
     'flipbooks.settings.custom_branding' => 'Custom Branding',
     'flipbooks.settings.custom_branding.name' => 'Brand Name',
     'flipbooks.settings.custom_branding.url' => 'Brand URL',
+    
 ];

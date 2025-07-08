@@ -16,7 +16,7 @@
         <h1 class="h4 text-truncate mb-0"><?= sprintf(l('flipbook_update.header'), $data->flipbook->name) ?></h1>
 
         <div class="d-flex align-items-center col-auto p-0">
-             <?= (new \Altum\View('links/link_dropdown_button', ['id' => $data->flipbook->link_id, 'resource_name' => $data->flipbook->name, 'url' => $data->flipbook->url, 'type' => 'flipbook']))->run() ?>
+             <?= (new \Altum\View('flipbooks/flipbook_dropdown_button', ['id' => $data->flipbook->flipbook_id, 'link_id' => $data->flipbook->link_id, 'resource_name' => $data->flipbook->name]))->run() ?>
         </div>
     </div>
 

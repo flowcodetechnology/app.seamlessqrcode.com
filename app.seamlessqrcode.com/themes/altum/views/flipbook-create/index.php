@@ -28,7 +28,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="url"><i class="fa fa-fw fa-link fa-sm text-muted mr-1"></i> <?= l('links.create.url') ?></label>
+                    <label for="url"><i class="fa fa-fw fa-link fa-sm text-muted mr-1"></i> <?= l('flipbook_create.url') ?></label>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <select name="domain_id" class="appearance-none custom-select form-control input-group-text" <?= count($data->domains) > 1 ? null : 'style="border-top-right-radius: .25rem; border-bottom-right-radius: .25rem;"' ?>>
@@ -41,9 +41,9 @@
                                 <?php endforeach ?>
                             </select>
                         </div>
-                        <input type="text" id="url" name="url" class="form-control" value="<?= $data->values['url'] ?>" placeholder="<?= l('links.create.url_placeholder') ?>" />
+                        <input type="text" id="url" name="url" class="form-control" value="<?= $data->values['url'] ?>" placeholder="<?= l('flipbook_create.url_placeholder') ?>" />
                     </div>
-                    <small class="form-text text-muted"><?= l('links.create.url_help') ?></small>
+                    <small class="form-text text-muted"><?= l('flipbook_create.url_help') ?></small>
                 </div>
 
                 <div class="form-group">
