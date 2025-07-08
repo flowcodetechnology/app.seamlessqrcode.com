@@ -167,7 +167,7 @@ class FlipbookCreate extends Controller {
                 db()->where('user_id', $this->user->user_id)->update('users', ['flipbooks' => db()->inc()]);
 
                 /* Clear the cache */
-                cache('flipbooks_total?user_id=' . $this->user->user_id)->delete();
+                cache()->delete('flipbooks_total?user_id=' . $this->user->user_id);
 
                 Alerts::add_success(sprintf(l('global.success_message.create1'), '<strong>' . $_POST['name'] . '</strong>'));
                 redirect('flipbook-update/' . $link_id);
