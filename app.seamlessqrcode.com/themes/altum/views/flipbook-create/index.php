@@ -22,7 +22,7 @@
                 <input type="hidden" name="token" value="<?= \Altum\Csrf::get() ?>" />
 
                 <div class="form-group">
-                    <label for="name"><i class="fa fa-fw fa-signature fa-sm text-muted mr-1"></i> <?= l('flipbooks.table.name') ?></label>
+                    <label for="name"><i class="fa fa-fw fa-signature fa-sm text-muted mr-1"></i> <?= l('flipbook_create.name') ?></label>
                     <input type="text" id="name" name="name" class="form-control" value="<?= $data->values['name'] ?>" required="required" />
                     <small class="form-text text-muted"><?= l('flipbook_create.name_help') ?></small>
                 </div>

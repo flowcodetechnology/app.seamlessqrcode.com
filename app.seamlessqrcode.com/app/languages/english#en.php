@@ -4425,7 +4425,8 @@ return [
     'flipbook_create.url' => 'URL alias',
     'flipbook_create.url_placeholder' => 'e.g., my-summer-catalog',
     'flipbook_create.url_help' => 'Leave empty for a randomly generated one.',
-    
+    'flipbook_create.name' => 'Flipbook name',
+
     // Flipbook Update
     'flipbook_update.breadcrumb' => 'Update Flipbook',
     'flipbook_update.header' => 'Update Flipbook',
@@ -4456,5 +4457,7 @@ return [
     'flipbooks.settings.custom_branding' => 'Custom Branding',
     'flipbooks.settings.custom_branding.name' => 'Brand Name',
     'flipbooks.settings.custom_branding.url' => 'Brand URL',
+    'global.datetime_heighlight' => 'Created on: %s',
+    'projects.no_project' => 'No project',
     
 ];
