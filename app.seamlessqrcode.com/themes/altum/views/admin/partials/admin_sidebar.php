@@ -21,8 +21,8 @@
                 data-delay='{ "hide": 5500 }'
                 title="
             <div class='d-flex text-left flex-column'>
-                <div class='mb-2'><a href='<?= url() ?>' class='text-gray-50 text-decoration-none'>🌐 &nbsp; <?= l('index.menu') ?></a></div>
-                <div><a href='<?= url('dashboard') ?>' class='text-gray-50 text-decoration-none'>🖥️ &nbsp; <?= l('dashboard.menu') ?></a></div>
+                <div class='mb-2'><a href='<?= url() ?>' class='text-gray-50 text-decoration-none'>🌐   <?= l('index.menu') ?></a></div>
+                <div><a href='<?= url('dashboard') ?>' class='text-gray-50 text-decoration-none'>🖥️   <?= l('dashboard.menu') ?></a></div>
             </div>
             "
         >
@@ -249,6 +249,14 @@
                     <i class="fas fa-fw fa-sm fa-qrcode mr-2"></i> <?= l('admin_qr_codes.menu') ?>
                 </a>
             </li>
+
+            <!-- START FLIPBOOKS LINK -->
+            <li class="<?= in_array(\Altum\Router::$controller, ['AdminFlipbooks', 'AdminFlipbookUpdate']) ? 'active' : null ?>">
+                <a class="nav-link text-truncate" href="<?= url('admin/flipbooks') ?>">
+                    <i class="fas fa-fw fa-sm fa-book-open mr-2"></i> <?= l('admin_flipbooks.menu') ?>
+                </a>
+            </li>
+            <!-- END FLIPBOOKS LINK -->
 
             <li class="<?= in_array(\Altum\Router::$controller, ['AdminProjects']) ? 'active' : null ?>">
                 <a class="nav-link text-truncate" href="<?= url('admin/projects') ?>">

@@ -292,6 +292,33 @@
                     <label for="qr_codes_bulk_limit"><?= l('admin_plans.plan.qr_codes_bulk_limit') ?></label>
                     <input type="number" id="qr_codes_bulk_limit" name="qr_codes_bulk_limit" min="-1" class="form-control" value="<?= $data->plan->settings->qr_codes_bulk_limit ?>" />
                 </div>
+                
+                <!-- START FLIPBOOKS SECTION -->
+                <div class="mb-4">
+                    <h3 class="h6"><?= l('admin_settings.flipbooks.header') ?></h3>
+
+                    <div class="form-group">
+                        <label for="flipbooks_limit"><?= l('admin_plans.plan.flipbooks_limit') ?></label>
+                        <input id="flipbooks_limit" type="number" name="flipbooks_limit" min="-1" class="form-control" value="<?= $data->plan->settings->flipbooks_limit ?? 0 ?>" />
+                        <small class="form-text text-muted"><?= l('admin_plans.plan.unlimited') ?></small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="flipbook_max_size_mb"><?= l('admin_plans.plan.flipbook_max_size_mb') ?></label>
+                        <div class="input-group">
+                            <input id="flipbook_max_size_mb" type="number" step="0.5" name="flipbook_max_size_mb" class="form-control" value="<?= $data->plan->settings->flipbook_max_size_mb ?? 2 ?>" />
+                            <div class="input-group-append"><span class="input-group-text">MB</span></div>
+                        </div>
+                        <small class="form-text text-muted"><?= l('admin_plans.plan.flipbook_max_size_mb_help') ?></small>
+                    </div>
+
+                    <div class="form-group custom-control custom-switch">
+                        <input id="enabled_flipbook_custom_branding" name="enabled_flipbook_custom_branding" type="checkbox" class="custom-control-input" <?= $data->plan->settings->enabled_flipbook_custom_branding ?? false ? 'checked="checked"' : null ?>>
+                        <label class="custom-control-label" for="enabled_flipbook_custom_branding"><?= l('admin_plans.plan.enabled_flipbook_custom_branding') ?></label>
+                        <small class="form-text text-muted"><?= l('admin_plans.plan.enabled_flipbook_custom_branding_help') ?></small>
+                    </div>
+                </div>
+                <!-- END FLIPBOOKS SECTION -->
 
                 <div class="form-group">
                     <label for="biolinks_limit"><?= l('admin_plans.plan.biolinks_limit') ?></label>

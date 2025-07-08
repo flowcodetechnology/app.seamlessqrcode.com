@@ -42,6 +42,20 @@
                     <?php endif ?>
                 </li>
 
+                <?php if(settings()->codes->qr_codes_is_enabled): ?>
+                    <li class="<?= in_array(\Altum\Router::$controller, ['QrCodes', 'QrCodeUpdate', 'QrCodeCreate']) ? 'active' : null ?>">
+                        <a href="<?= url('qr-codes') ?>"><i class="fas fa-fw fa-sm fa-qrcode mr-2"></i> <?= l('qr_codes.menu') ?></a>
+                    </li>
+                <?php endif ?>
+
+                 <!-- START FLIPBOOKS LINK -->
+                <?php if(settings()->flipbooks->is_enabled): ?>
+                    <li class="<?= in_array(\Altum\Router::$controller, ['Flipbooks', 'FlipbookUpdate', 'FlipbookCreate']) ? 'active' : null ?>">
+                        <a href="<?= url('flipbooks') ?>"><i class="fas fa-fw fa-sm fa-book-open mr-2"></i> <?= l('flipbooks.menu') ?></a>
+                    </li>
+                <?php endif ?>
+                <!-- END FLIPBOOKS LINK -->
+
                 <?php if(settings()->links->biolinks_is_enabled): ?>
                     <li class="<?= (\Altum\Router::$controller == 'Links' && ($_GET['type'] ?? null) == 'biolink') || (\Altum\Router::$controller == 'Link' && $this->link->type == 'biolink') ? 'active' : null ?>">
                         <a href="<?= url('links?type=biolink') ?>"><i class="fas fa-fw fa-sm fa-hashtag mr-2"></i> <?= l('links.menu.biolink') ?></a>
@@ -78,11 +92,7 @@
                     </li>
                 <?php endif ?>
 
-                <?php if(settings()->codes->qr_codes_is_enabled): ?>
-                    <li class="<?= in_array(\Altum\Router::$controller, ['QrCodes', 'QrCodeUpdate', 'QrCodeCreate']) ? 'active' : null ?>">
-                        <a href="<?= url('qr-codes') ?>"><i class="fas fa-fw fa-sm fa-qrcode mr-2"></i> <?= l('qr_codes.menu') ?></a>
-                    </li>
-                <?php endif ?>
+                
 
                 <?php if(\Altum\Plugin::is_active('aix')): ?>
                     <div class="divider-wrapper">

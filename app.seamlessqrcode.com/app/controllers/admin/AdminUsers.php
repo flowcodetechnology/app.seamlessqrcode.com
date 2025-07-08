@@ -1,18 +1,4 @@
 <?php
-/*
- * Copyright (c) 2025 AltumCode (https://altumcode.com/)
- *
- * This software is licensed exclusively by AltumCode and is sold only via https://altumcode.com/.
- * Unauthorized distribution, modification, or use of this software without a valid license is not permitted and may be subject to applicable legal actions.
- *
- * 🌍 View all other existing AltumCode projects via https://altumcode.com/
- * 📧 Get in touch for support or general queries via https://altumcode.com/contact
- * 📤 Download the latest version via https://altumcode.com/downloads
- *
- * 🐦 X/Twitter: https://x.com/AltumCode
- * 📘 Facebook: https://facebook.com/altumcode
- * 📸 Instagram: https://instagram.com/altumcode
- */
 
 namespace Altum\Controllers;
 
@@ -155,7 +141,6 @@ class AdminUsers extends Controller {
 
             switch($_POST['type']) {
                 case 'delete':
-
                     foreach($_POST['selected'] as $user_id) {
                         /* Do not allow self-deletion */
                         if($user_id == $this->user->user_id) {
@@ -164,6 +149,52 @@ class AdminUsers extends Controller {
 
                         (new User())->delete((int) $user_id);
                     }
+                    break;
+
+                case 'transfer':
+                    if(empty($_POST['user_id'])) {
+                        redirect('admin/users');
+                    }
+
+                    $user_id = (int) $_POST['user_id'];
+                    $new_user_id = (int) $_POST['new_user_id'];
+
+                    if($user_id == $new_user_id) {
+                        Alerts::add_error(l('admin_transfer_modal.error_message.self_transfer'));
+                        redirect(isset($_POST['redirect']) ? $_POST['redirect'] : 'admin/users');
+                    }
+
+                    if(!db()->where('user_id', $new_user_id)->has('users')) {
+                        Alerts::add_error(l('admin_transfer_modal.error_message.invalid_user'));
+                        redirect(isset($_POST['redirect']) ? $_POST['redirect'] : 'admin/users');
+                    }
+
+                    if(!Alerts::has_field_errors() && !Alerts::has_errors()) {
+                        foreach($_POST['selected'] as $resource_id) {
+                            $resource_id = (int) $resource_id;
+
+                            switch($_POST['resource_type']) {
+                                case 'flipbook':
+                                    /* Get the resource */
+                                    $resource = db()->where('flipbook_id', $resource_id)->getOne('flipbooks', ['link_id', 'user_id']);
+
+                                    if($resource) {
+                                        /* Update resource */
+                                        db()->where('flipbook_id', $resource_id)->update('flipbooks', ['user_id' => $new_user_id]);
+                                        /* Update link */
+                                        db()->where('link_id', $resource->link_id)->update('links', ['user_id' => $new_user_id]);
+                                        /* Update user stats */
+                                        db()->where('user_id', $user_id)->update('users', ['flipbooks' => db()->inc(-1)]);
+                                        db()->where('user_id', $new_user_id)->update('users', ['flipbooks' => db()->inc()]);
+                                    }
+                                    break;
+                            }
+                        }
+
+                        Alerts::add_success(l('admin_transfer_modal.success_message'));
+                    }
+
+                    redirect(isset($_POST['redirect']) ? $_POST['redirect'] : 'admin/users');
                     break;
             }
 

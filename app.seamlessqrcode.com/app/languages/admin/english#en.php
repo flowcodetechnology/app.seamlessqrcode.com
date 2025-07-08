@@ -1,18 +1,4 @@
 <?php
-/*
- * Copyright (c) 2025 AltumCode (https://altumcode.com/)
- *
- * This software is licensed exclusively by AltumCode and is sold only via https://altumcode.com/.
- * Unauthorized distribution, modification, or use of this software without a valid license is not permitted and may be subject to applicable legal actions.
- *
- * 🌍 View all other existing AltumCode projects via https://altumcode.com/
- * 📧 Get in touch for support or general queries via https://altumcode.com/contact
- * 📤 Download the latest version via https://altumcode.com/downloads
- *
- * 🐦 X/Twitter: https://x.com/AltumCode
- * 📘 Facebook: https://facebook.com/altumcode
- * 📸 Instagram: https://instagram.com/altumcode
- */
 
 return [
     'admin_blog.menu' => 'Blog',
@@ -2016,4 +2002,23 @@ return [
     'admin_notification_handlers.title' => 'Notification handlers',
     'admin_notification_handlers.header' => 'Notification handlers',
     'admin_notification_handlers.menu' => 'Notif. handlers',
+
+            // Admin Flipbooks
+    'admin_flipbooks.breadcrumb' => 'Flipbooks',
+    'admin_flipbooks.title' => 'Flipbooks management',
+    'admin_flipbooks.header' => 'Flipbooks management',
+    'admin_flipbooks.menu' => 'Flipbooks',
+
+    // Admin Plan Update
+    'admin_plans.plan.flipbooks_limit' => 'Flipbooks limit',
+    'admin_plans.plan.flipbooks_limit_help' => 'The total amount of flipbooks a user can create. Set -1 for unlimited.',
+    'admin_plans.plan.flipbook_max_size_mb' => 'Max flipbook file size (MB)',
+    'admin_plans.plan.flipbook_max_size_mb_help' => 'The maximum allowed file size for an uploaded PDF, in megabytes.',
+    'admin_plans.plan.enabled_flipbook_custom_branding' => 'Enable custom branding',
+    'admin_plans.plan.enabled_flipbook_custom_branding_help' => 'Enables the user to add their own custom branding to their flipbooks.',
+
+    // Admin Settings
+    'admin_settings.flipbooks.header' => 'Flipbooks',
+    'admin_settings.flipbooks.is_enabled' => 'Enable Flipbooks system',
+    'admin_settings.flipbooks.is_enabled_help' => 'Enable users to create and share flipbooks from PDF files.',
 ];

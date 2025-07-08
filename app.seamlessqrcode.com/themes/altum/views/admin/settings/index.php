@@ -16,6 +16,7 @@
                 <option value="<?= url('admin/settings/links') ?>" class="nav-link" <?= $data->method == 'links' ? 'selected="selected"' : null ?>>🔗 <?= l('admin_settings.links.tab') ?></option>
                 <option value="<?= url('admin/settings/tools') ?>" class="nav-link" <?= $data->method == 'tools' ? 'selected="selected"' : null ?>>🛠️ <?= l('admin_settings.tools.tab') ?></option>
                 <option value="<?= url('admin/settings/codes') ?>" class="nav-link" <?= $data->method == 'codes' ? 'selected="selected"' : null ?>>💻 <?= l('admin_settings.codes.tab') ?></option>
+                <option value="<?= url('admin/settings/flipbooks') ?>" class="nav-link" <?= $data->method == 'flipbooks' ? 'selected="selected"' : null ?>>📖 <?= l('admin_settings.flipbooks.header') ?></option>
                 <option value="<?= url('admin/settings/notification_handlers') ?>" class="nav-link" <?= $data->method == 'notification_handlers' ? 'selected="selected"' : null ?>>🧩 <?= l('admin_settings.notification_handlers.tab') ?></option>
 
                 <?php if(\Altum\Plugin::is_active('email-signatures')): ?>
@@ -71,6 +72,7 @@
                     <a class="nav-link <?= $data->method == 'links' ? 'active' : null ?>" href="<?= url('admin/settings/links') ?>"><i class="fas fa-fw fa-sm fa-link mr-2"></i> <?= l('admin_settings.links.tab') ?></a>
                     <a class="nav-link <?= $data->method == 'tools' ? 'active' : null ?>" href="<?= url('admin/settings/tools') ?>"><i class="fas fa-fw fa-sm fa-tools mr-2"></i> <?= l('admin_settings.tools.tab') ?></a>
                     <a class="nav-link <?= $data->method == 'codes' ? 'active' : null ?>" href="<?= url('admin/settings/codes') ?>"><i class="fas fa-fw fa-sm fa-qrcode mr-2"></i> <?= l('admin_settings.codes.tab') ?></a>
+                    <a class="nav-link <?= $data->method == 'flipbooks' ? 'active' : null ?>" href="<?= url('admin/settings/flipbooks') ?>"><i class="fas fa-fw fa-sm fa-book-open mr-2"></i> <?= l('admin_settings.flipbooks.header') ?></a>
                     <a class="nav-link <?= $data->method == 'notification_handlers' ? 'active' : null ?>" href="<?= url('admin/settings/notification_handlers') ?>"><i class="fas fa-fw fa-sm fa-bell mr-2"></i> <?= l('admin_settings.notification_handlers.tab') ?></a>
 
                     <?php if(\Altum\Plugin::is_active('email-signatures')): ?>
