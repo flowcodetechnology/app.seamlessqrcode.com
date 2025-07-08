@@ -4426,10 +4426,15 @@ return [
     'flipbook_create.url_placeholder' => 'e.g., my-summer-catalog',
     'flipbook_create.url_help' => 'Leave empty for a randomly generated one.',
     'flipbook_create.name' => 'Flipbook name',
+    'flipbook_create.url' => 'URL alias',
+    'flipbook_create.url_placeholder' => 'e.g., my-summer-catalog',
+    
 
     // Flipbook Update
     'flipbook_update.breadcrumb' => 'Update Flipbook',
     'flipbook_update.header' => 'Update Flipbook',
+    'flipbook_update.input.name' => 'Flipbook name',
+    'flipbook_update.input.url' => 'URL alias',
 
     // Flipbook Settings
     'flipbooks.settings' => 'Settings',
