@@ -1,6 +1,6 @@
 <?php
 
-define('NEW_PRODUCT_VERSION', '57.1.0');
+define('NEW_PRODUCT_VERSION', '57.1.1');
 define('NEW_PRODUCT_CODE', '5710');
 
 $updates = [
