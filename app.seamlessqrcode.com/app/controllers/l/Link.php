@@ -277,26 +277,58 @@ class Link extends Controller {
             }
 
             /* Check what to do next */
-            if($this->link->type == 'biolink') {
-
+                    /* Check what to do next */
+            if($this->type == 'biolink_block') {
                 /* Store statistics */
                 $this->create_statistics();
 
-                /* Process biolink page */
-                $this->process_biolink();
+                if($this->link->type == 'link') $this->process_link();
+                if($this->link->type == 'vcard') $this->process_vcard();
 
-            }
-
-            else if($this->link->type == 'flipbook') {
-
+            } else {
                 /* Store statistics */
                 $this->create_statistics();
 
-                /* Redirect to the flipbook page */
-                header('Location: ' . url('f/' . $this->link->url));
-                die();
+                switch($this->link->type) {
+                    case 'biolink':
+                        $this->process_biolink();
+                        break;
 
-            }
+                    case 'flipbook':
+                        header('Location: ' . url('f/' . $this->link->url));
+                        die();
+                        break;
+
+                    case 'link':
+                        $this->process_link();
+                        break;
+
+                    case 'vcard':
+                        if(count($this->link->pixels_ids) && !isset($_GET['process'])) {
+                            $this->redirect_to($this->link->full_url . '&process=true');
+                        }
+                        $this->process_vcard();
+                        break;
+
+                    case 'event':
+                        if(count($this->link->pixels_ids) && !isset($_GET['process'])) {
+                            $this->redirect_to($this->link->full_url . '&process=true');
+                        }
+                        $this->process_event();
+                        break;
+
+                    case 'file':
+                        if(count($this->link->pixels_ids) && !isset($_GET['process'])) {
+                            $this->redirect_to($this->link->full_url . '&process=true');
+                        }
+                        $this->process_file();
+                        break;
+
+                    case 'static':
+                        $this->process_static();
+                        break;
+                }
+           
 
             else if($this->link->type == 'link') {
 

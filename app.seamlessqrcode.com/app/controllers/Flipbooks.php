@@ -82,47 +82,42 @@ class Flipbooks extends Controller {
     }
 
         public function delete() {
-        \Altum\Authentication::guard();
+            \Altum\Authentication::guard();
 
-        /* Team checks */
-        if(\Altum\Teams::is_delegated() && !\Altum\Teams::has_access('delete.flipbooks')) {
-            Alerts::add_info(l('global.info_message.team_no_access'));
+            if(\Altum\Teams::is_delegated() && !\Altum\Teams::has_access('delete.flipbooks')) {
+                Alerts::add_info(l('global.info_message.team_no_access'));
+                redirect('flipbooks');
+            }
+
+            if(empty($_POST)) {
+                redirect('flipbooks');
+            }
+
+            $flipbook_id = (int) query_clean($_POST['flipbook_id']);
+
+            if(!\Altum\Csrf::check()) {
+                Alerts::add_error(l('global.error_message.invalid_csrf_token'));
+            }
+
+            if(!$flipbook = db()->where('flipbook_id', $flipbook_id)->where('user_id', $this->user->user_id)->getOne('flipbooks', ['flipbook_id', 'name', 'link_id'])) {
+                redirect('flipbooks');
+            }
+
+            if(!Alerts::has_field_errors() && !Alerts::has_errors()) {
+                /* Delete the flipbook resource */
+                (new \Altum\Models\Flipbook())->delete($flipbook->flipbook_id);
+                
+                /* Delete the associated link from the links table */
+                db()->where('link_id', $flipbook->link_id)->delete('links');
+
+                /* Clear the cache */
+                cache()->deleteItem('links_total?user_id=' . $this->user->user_id);
+                
+                Alerts::add_success(sprintf(l('global.success_message.delete1'), '<strong>' . $flipbook->name . '</strong>'));
+            }
+
             redirect('flipbooks');
         }
 
-        if(empty($_POST)) {
-            redirect('flipbooks');
-        }
-
-        $flipbook_id = (int) query_clean($_POST['flipbook_id']);
-
-        if(!\Altum\Csrf::check()) {
-            Alerts::add_error(l('global.error_message.invalid_csrf_token'));
-            redirect('flipbooks');
-        }
-
-        if(!$flipbook = db()->where('flipbook_id', $flipbook_id)->where('user_id', $this->user->user_id)->getOne('flipbooks', ['flipbook_id', 'name', 'link_id'])) {
-            redirect('flipbooks');
-        }
-
-        if(!Alerts::has_field_errors() && !Alerts::has_errors()) {
-
-            /* Delete the flipbook */
-            (new Flipbook())->delete($flipbook->flipbook_id);
-            
-            /* Delete the associated link */
-            db()->where('link_id', $flipbook->link_id)->delete('links');
-
-            /* Clear the cache */
-            cache()->deleteItem('links_total?user_id=' . $this->user->user_id);
-            
-            /* Set a nice success message */
-            Alerts::add_success(sprintf(l('global.success_message.delete1'), '<strong>' . $flipbook->name . '</strong>'));
-
-            redirect('flipbooks');
-
-        }
-
-        redirect('flipbooks');
-    }
+       
 }

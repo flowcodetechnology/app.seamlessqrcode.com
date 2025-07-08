@@ -4435,6 +4435,7 @@ return [
     'flipbook_update.header' => 'Update Flipbook',
     'flipbook_update.input.name' => 'Flipbook name',
     'flipbook_update.input.url' => 'URL alias',
+    'flipbook_update.title' => 'Update Flipbook',
 
     // Flipbook Settings
     'flipbooks.settings' => 'Settings',
