@@ -1,5 +1,18 @@
 <?php
-
+/*
+ * Copyright (c) 2025 AltumCode (https://altumcode.com/)
+ *
+ * This software is licensed exclusively by AltumCode and is sold only via https://altumcode.com/.
+ * Unauthorized distribution, modification, or use of this software without a valid license is not permitted and may be subject to applicable legal actions.
+ *
+ * 🌍 View all other existing AltumCode projects via https://altumcode.com/
+ * 📧 Get in touch for support or general queries via https://altumcode.com/contact
+ * 📤 Download the latest version via https://altumcode.com/downloads
+ *
+ * 🐦 X/Twitter: https://x.com/AltumCode
+ * 📘 Facebook: https://facebook.com/altumcode
+ * 📸 Instagram: https://instagram.com/altumcode
+ */
 
 namespace Altum\Controllers;
 
@@ -88,8 +101,8 @@ class Link extends Controller {
         $this->link->settings = json_decode($this->link->settings ?? '');
         $this->link->pixels_ids = json_decode($this->link->pixels_ids ?? '[]');
 
-               /* Determine the actual full url */
-        if(in_array($this->type, ['link', 'file', 'vcard', 'event', 'flipbook'])) {
+        /* Determine the actual full url */
+        if(in_array($this->link->type, ['link', 'file', 'vcard', 'event', 'static', 'flipbook'])) {
             $this->link->full_url = $domain_id ? \Altum\Router::$data['domain']->scheme . \Altum\Router::$data['domain']->host . '/' . (\Altum\Router::$data['domain']->link_id == $this->link->link_id ? null : $this->link->url) : SITE_URL . $this->link->url;
         } else {
             $this->link->full_url = SITE_URL . 'l/link?biolink_block_id=' . $this->link->biolink_block_id;
@@ -277,111 +290,50 @@ class Link extends Controller {
             }
 
             /* Check what to do next */
-                    /* Check what to do next */
-            if($this->type == 'biolink_block') {
-                /* Store statistics */
+            if($this->link->type == 'biolink') {
                 $this->create_statistics();
+                $this->process_biolink();
+            }
 
-                if($this->link->type == 'link') $this->process_link();
-                if($this->link->type == 'vcard') $this->process_vcard();
-
-            } else {
-                /* Store statistics */
+            else if($this->link->type == 'flipbook') {
                 $this->create_statistics();
-
-                switch($this->link->type) {
-                    case 'biolink':
-                        $this->process_biolink();
-                        break;
-
-                    case 'flipbook':
-                        header('Location: ' . url('f/' . $this->link->url));
-                        die();
-                        break;
-
-                    case 'link':
-                        $this->process_link();
-                        break;
-
-                    case 'vcard':
-                        if(count($this->link->pixels_ids) && !isset($_GET['process'])) {
-                            $this->redirect_to($this->link->full_url . '&process=true');
-                        }
-                        $this->process_vcard();
-                        break;
-
-                    case 'event':
-                        if(count($this->link->pixels_ids) && !isset($_GET['process'])) {
-                            $this->redirect_to($this->link->full_url . '&process=true');
-                        }
-                        $this->process_event();
-                        break;
-
-                    case 'file':
-                        if(count($this->link->pixels_ids) && !isset($_GET['process'])) {
-                            $this->redirect_to($this->link->full_url . '&process=true');
-                        }
-                        $this->process_file();
-                        break;
-
-                    case 'static':
-                        $this->process_static();
-                        break;
-                }
-           
+                header('Location: ' . url('f/' . $this->link->url));
+                die();
+            }
 
             else if($this->link->type == 'link') {
-
-                /* Store statistics */
                 $this->create_statistics();
-
-                /* Process short url redirection */
                 $this->process_link();
+            }
 
-            } else if($this->link->type == 'vcard') {
-
+            else if($this->link->type == 'vcard') {
                 if(count($this->link->pixels_ids) && !isset($_GET['process'])) {
                     $this->redirect_to($this->link->full_url . '&process=true');
                 }
-
-                /* Store statistics */
                 $this->create_statistics();
-
-                /* Process vcard download  */
                 $this->process_vcard();
+            }
 
-            } else if($this->link->type == 'event') {
-
+            else if($this->link->type == 'event') {
                 if(count($this->link->pixels_ids) && !isset($_GET['process'])) {
                     $this->redirect_to($this->link->full_url . '&process=true');
                 }
-
-                /* Store statistics */
                 $this->create_statistics();
-
-                /* Process event download */
                 $this->process_event();
+            }
 
-            } else if($this->link->type == 'file') {
-
+            else if($this->link->type == 'file') {
                 if(count($this->link->pixels_ids) && !isset($_GET['process'])) {
                     $this->redirect_to($this->link->full_url . '&process=true');
                 }
-
-                /* Store statistics */
                 $this->create_statistics();
-
-                /* Process file display / download */
                 $this->process_file();
+            }
 
-            } else if($this->link->type == 'static') {
-
-                /* Process */
+            else if($this->link->type == 'static') {
                 $this->process_static();
-
             }
         }
-
     }
 
     private function create_statistics() {
@@ -488,6 +440,8 @@ class Link extends Controller {
         $cookie_new_value = isset($_COOKIE[$cookie_name]) ? (int) $_COOKIE[$cookie_name] + 1 : 0;
         setcookie($cookie_name, (int) $cookie_new_value, time()+60*60*24*1);
     }
+    // ... rest of the file continues below ...
+
 
     private function process_biolink() {
 
@@ -1183,8 +1137,8 @@ class Link extends Controller {
                 'twilio_call_url'     => SITE_URL .
                     'twiml/biolink_block.simple_notification?param1=' .
                     urlencode($biolink_block->settings->name ?? '') .
-                    '¶m2=' . urlencode($link->url) .
-                    '¶m3=¶m4=' . urlencode($notification_data['url']),
+                    '&param2=' . urlencode($link->url) .
+                    '&param3=&param4=' . urlencode($notification_data['url']),
 
                 /* Internal notification */
                 'internal_icon'       => 'fas fa-database',
@@ -1340,8 +1294,8 @@ class Link extends Controller {
                 'twilio_call_url'       => SITE_URL .
                     'twiml/biolink_block.simple_notification?param1=' .
                     urlencode($biolink_block->settings->name ?? '') .
-                    '¶m2=' . urlencode($link->url) .
-                    '¶m3=¶m4=' . urlencode($notification_data['url']),
+                    '&param2=' . urlencode($link->url) .
+                    '&param3=&param4=' . urlencode($notification_data['url']),
 
                 /* Internal notification */
                 'internal_icon'         => 'fas fa-database',
@@ -1495,8 +1449,8 @@ class Link extends Controller {
                 'twilio_call_url' => SITE_URL .
                     'twiml/biolink_block.simple_notification?param1=' .
                     urlencode($biolink_block->settings->name ?? '') .
-                    '¶m2=' . urlencode($link->url) .
-                    '¶m3=¶m4=' . urlencode($notification_data['url']),
+                    '&param2=' . urlencode($link->url) .
+                    '&param3=&param4=' . urlencode($notification_data['url']),
 
                 /* Internal notification */
                 'internal_icon' => 'fas fa-database',
@@ -1714,8 +1668,8 @@ class Link extends Controller {
                 'twilio_call_url'     => SITE_URL .
                     'twiml/biolink_block.simple_notification?param1=' .
                     urlencode($biolink_block->settings->name ?? '') .
-                    '¶m2=' . urlencode($link->url) .
-                    '¶m3=¶m4=' . urlencode($notification_data['url']),
+                    '&param2=' . urlencode($link->url) .
+                    '&param3=&param4=' . urlencode($notification_data['url']),
 
                 /* internal notification */
                 'internal_icon'       => 'fas fa-database',
